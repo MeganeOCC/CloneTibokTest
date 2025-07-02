@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export default function AdminLayout({
@@ -10,75 +8,12 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
   const pathname = usePathname();
-  const supabase = getSupabaseBrowserClient();
 
-  // Don't apply this layout to login page - it has its own layout
+  // Don't apply this layout to login page
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        router.push("/admin/login");
-        return;
-      }
-
-      // Optional: Check if user is admin (if you have role-based auth)
-      // const { data: profile } = await supabase
-      //   .from('profiles')
-      //   .select('role')
-      //   .eq('id', user.id)
-      //   .single();
-
-      // if (profile?.role !== 'admin') {
-      //   router.push("/admin/login");
-      //   return;
-      // }
-
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      router.push("/admin/login");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/admin/login");
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-lg">Vérification de l'authentification...</div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null; // Will redirect to login
-  }
-
-  const navigation = [
-    { name: "Dashboard", href: "/admin", icon: "📊" },
-    { name: "Médecins", href: "/admin/doctors", icon: "👨‍⚕️" },
-    { name: "Utilisateurs", href: "/admin/users", icon: "👥" },
-    { name: "Pharmacies", href: "/admin/pharmacies", icon: "🏥" },
-    { name: "Commandes", href: "/admin/orders", icon: "📦" },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,23 +29,42 @@ export default function AdminLayout({
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 NAVIGATION
               </p>
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <div
-                      className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        isActive
-                          ? "bg-blue-100 text-blue-900"
-                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                      }`}
-                    >
-                      <span className="mr-3">{item.icon}</span>
-                      {item.name}
-                    </div>
-                  </Link>
-                );
-              })}
+              <Link href="/admin" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Dashboard
+              </Link>
+              <Link href="/admin/pharmacies" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Pharmacies
+              </Link>
+              <Link href="/admin/doctors" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Médecins
+              </Link>
+              <Link href="/admin/deliveries" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Livraisons n8n
+              </Link>
+              <Link href="/admin/clients" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Interfaces Clients
+              </Link>
+              <Link href="/admin/monitoring" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Monitoring
+              </Link>
+              <Link href="/admin/analytics" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Analytics
+              </Link>
+            </div>
+            
+            <div className="space-y-1 pt-6">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                SYSTÈME
+              </p>
+              <Link href="/admin/workflows" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Workflows n8n
+              </Link>
+              <Link href="/admin/settings" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Paramètres
+              </Link>
+              <Link href="/admin/logs" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
+                Logs Système
+              </Link>
             </div>
           </nav>
         </div>
@@ -140,13 +94,6 @@ export default function AdminLayout({
                   </div>
                   <span className="text-sm font-medium text-gray-700">Admin TIBOK</span>
                 </div>
-                
-                <button 
-                  onClick={handleLogout}
-                  className="px-3 py-1 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50"
-                >
-                  Déconnexion
-                </button>
               </div>
             </div>
           </header>
