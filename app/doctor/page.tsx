@@ -82,7 +82,7 @@ const LoginForm = () => {
     try {
       console.log('Attempting login with email:', email)
       
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password
       })
@@ -92,27 +92,65 @@ const LoginForm = () => {
         throw loginError
       }
 
-      console.log('Login successful, user ID:', data.user.id)
+      console.log('Login successful, user:', authData.user)
 
-      // Check if user is a doctor with enhanced debugging
+      // First check if user exists and has the correct email
+      const userId = authData.user.id
+      console.log('Checking profile for user ID:', userId)
+
+      // Try direct query to profiles table
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('id, email, role, full_name')
-        .eq('id', data.user.id)
+        .select('*')
+        .eq('id', userId)
         .single()
 
       console.log('Profile query result:', { profile, profileError })
 
       if (profileError) {
-        console.error('Profile fetch error:', profileError)
+        console.error('Profile error details:', {
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint,
+          code: profileError.code
+        })
+        
+        // If profile doesn't exist, try to create it
+        if (profileError.code === 'PGRST116') {
+          console.log('Profile not found, attempting to create one...')
+          
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
+              id: userId,
+              email: authData.user.email,
+              role: 'doctor',
+              full_name: 'Dr. Customer Service',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .select()
+            .single()
+
+          if (createError) {
+            console.error('Failed to create profile:', createError)
+            throw new Error("Impossible de créer le profil utilisateur")
+          }
+
+          console.log('Profile created successfully:', newProfile)
+          router.push("/doctor/dashboard")
+          return
+        }
+        
         throw new Error("Erreur lors de la récupération du profil")
       }
 
       if (!profile) {
-        console.error('No profile found for user:', data.user.id)
+        console.error('No profile found for user:', userId)
         throw new Error("Profil utilisateur introuvable")
       }
 
+      console.log('Profile found:', profile)
       console.log('User role:', profile.role)
 
       if (profile.role !== 'doctor') {
@@ -151,6 +189,7 @@ const LoginForm = () => {
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full"
             />
           </div>
           <div>
@@ -164,6 +203,7 @@ const LoginForm = () => {
                 required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full pr-10"
               />
               <Button
                 type="button"
@@ -209,9 +249,10 @@ const LoginForm = () => {
 
         {/* Debug info for testing */}
         <div className="mt-4 p-3 bg-gray-50 rounded-md text-xs text-gray-600">
-          <p><strong>Test credentials:</strong></p>
+          <p className="font-semibold mb-1">Test credentials:</p>
           <p>Email: customer.service@obesity-care-clinic.com</p>
           <p>Password: [the password you set]</p>
+          <p className="mt-2 text-gray-500">Check browser console (F12) for debug info</p>
         </div>
       </CardContent>
     </Card>
