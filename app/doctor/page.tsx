@@ -605,7 +605,16 @@ const RegistrationForm = ({ onRegistrationSubmit }: { onRegistrationSubmit: () =
       // 2. Wait a moment for the trigger to complete
       await new Promise(resolve => setTimeout(resolve, 1000))
 
-      // 3. Insert into doctors table with explicit select to check permissions
+      // 3. Try to get the current session first
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError)
+      }
+      
+      console.log("Current session:", session)
+      
+      // 4. Insert into doctors table with explicit select to check permissions
       const { data: doctorData, error: insertError } = await supabase
         .from("doctors")
         .insert([
