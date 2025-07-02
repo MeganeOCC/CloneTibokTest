@@ -80,27 +80,52 @@ const LoginForm = () => {
     setLoading(true)
 
     try {
+      console.log('Attempting login with email:', email)
+      
       const { data, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password
       })
 
-      if (loginError) throw loginError
+      if (loginError) {
+        console.error('Login error:', loginError)
+        throw loginError
+      }
 
-      // Check if user is a doctor
-      const { data: profile } = await supabase
+      console.log('Login successful, user ID:', data.user.id)
+
+      // Check if user is a doctor with enhanced debugging
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('role')
+        .select('id, email, role, full_name')
         .eq('id', data.user.id)
         .single()
 
-      if (profile?.role !== 'doctor') {
+      console.log('Profile query result:', { profile, profileError })
+
+      if (profileError) {
+        console.error('Profile fetch error:', profileError)
+        throw new Error("Erreur lors de la récupération du profil")
+      }
+
+      if (!profile) {
+        console.error('No profile found for user:', data.user.id)
+        throw new Error("Profil utilisateur introuvable")
+      }
+
+      console.log('User role:', profile.role)
+
+      if (profile.role !== 'doctor') {
+        console.error('Access denied - user role is:', profile.role)
         await supabase.auth.signOut()
         throw new Error("Accès réservé aux médecins")
       }
 
+      console.log('Doctor login successful, redirecting to dashboard')
       router.push("/doctor/dashboard")
+      
     } catch (err: any) {
+      console.error('Login process error:', err)
       setError(err.message || "Erreur de connexion")
     } finally {
       setLoading(false)
@@ -181,6 +206,13 @@ const LoginForm = () => {
             {loading ? "Connexion..." : t("doctorLoginButton")}
           </Button>
         </form>
+
+        {/* Debug info for testing */}
+        <div className="mt-4 p-3 bg-gray-50 rounded-md text-xs text-gray-600">
+          <p><strong>Test credentials:</strong></p>
+          <p>Email: customer.service@obesity-care-clinic.com</p>
+          <p>Password: [the password you set]</p>
+        </div>
       </CardContent>
     </Card>
   )
