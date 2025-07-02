@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
+  Stethoscope, // Add this import for the doctor icon
 } from "lucide-react"
 import { LanguageContext } from "@/contexts/language-context"
 import { translations } from "@/lib/translations"
@@ -32,6 +33,7 @@ interface AdminSidebarProps {
 const navItems = [
   { href: "/admin", labelKey: "dashboard", icon: LayoutDashboard },
   { href: "/admin/pharmacies", labelKey: "pharmacies", icon: Building },
+  { href: "/admin/doctors", labelKey: "doctors", icon: Stethoscope }, // ADD THIS LINE
   { href: "/admin/deliveries", labelKey: "deliveries", icon: Truck },
   { href: "/admin/clients", labelKey: "clientInterfaces", icon: Users },
   { href: "/admin/monitoring", labelKey: "monitoring", icon: Activity },
