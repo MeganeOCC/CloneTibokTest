@@ -592,27 +592,53 @@ const RegistrationForm = ({ onRegistrationSubmit }: { onRegistrationSubmit: () =
         }
       })
       
-      if (signUpError) throw signUpError
+      if (signUpError) {
+        console.error("Signup error:", signUpError)
+        throw signUpError
+      }
       
       const user = signUpData?.user
       if (!user) throw new Error("Inscription utilisateur échouée")
 
-      // 2. Insert into doctors table
-      const { error: insertError } = await supabase.from("doctors").insert([
-        {
-          user_id: user.id,
-          full_name: `${formData.firstName} ${formData.lastName}`,
-          specialty: formData.specialty,
-          email: formData.profEmail,
-          phone_number: formData.phoneReg,
-          medical_council_number: formData.mcmNumber,
-          years_experience: formData.experience,
-          languages: formData.languages.join(", ")
-        }
-      ])
-      
-      if (insertError) throw insertError
+      console.log("User created successfully:", user.id)
 
+      // 2. Wait a moment for the trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // 3. Insert into doctors table with explicit select to check permissions
+      const { data: doctorData, error: insertError } = await supabase
+        .from("doctors")
+        .insert([
+          {
+            user_id: user.id,
+            full_name: `${formData.firstName} ${formData.lastName}`,
+            specialty: formData.specialty,
+            email: formData.profEmail,
+            phone_number: formData.phoneReg,
+            medical_council_number: formData.mcmNumber,
+            years_experience: formData.experience,
+            languages: formData.languages.join(", ")
+          }
+        ])
+        .select()
+      
+      if (insertError) {
+        console.error("Doctor insert error:", insertError)
+        console.error("Error details:", {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint
+        })
+        
+        // If it's a permission error, provide a more helpful message
+        if (insertError.message.includes("permission denied")) {
+          throw new Error("Erreur de permission: Veuillez contacter l'administrateur pour configurer les permissions de la table doctors.")
+        }
+        throw insertError
+      }
+
+      console.log("Doctor record created successfully:", doctorData)
       onRegistrationSubmit()
     } catch (err: any) {
       console.error("Registration error:", err)
