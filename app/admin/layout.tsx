@@ -1,14 +1,76 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
   const pathname = usePathname();
+  const supabase = getSupabaseBrowserClient();
+
+  // Don't apply this layout to login page - it has its own layout
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        router.push("/admin/login");
+        return;
+      }
+
+      // Optional: Check if user is admin (if you have role-based auth)
+      // const { data: profile } = await supabase
+      //   .from('profiles')
+      //   .select('role')
+      //   .eq('id', user.id)
+      //   .single();
+
+      // if (profile?.role !== 'admin') {
+      //   router.push("/admin/login");
+      //   return;
+      // }
+
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      router.push("/admin/login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/admin/login");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg">Vérification de l'authentification...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect to login
+  }
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: "📊" },
@@ -78,6 +140,13 @@ export default function AdminLayout({
                   </div>
                   <span className="text-sm font-medium text-gray-700">Admin TIBOK</span>
                 </div>
+                
+                <button 
+                  onClick={handleLogout}
+                  className="px-3 py-1 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50"
+                >
+                  Déconnexion
+                </button>
               </div>
             </div>
           </header>
