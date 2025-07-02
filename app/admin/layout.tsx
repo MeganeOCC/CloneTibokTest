@@ -15,6 +15,8 @@ export default function AdminLayout({
     return <>{children}</>;
   }
 
+  const isActive = (path: string) => pathname === path;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen">
@@ -29,26 +31,75 @@ export default function AdminLayout({
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 NAVIGATION
               </p>
-              <Link href="/admin" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Dashboard
+              
+              <Link href="/admin">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  📊 Dashboard
+                </div>
               </Link>
-              <Link href="/admin/pharmacies" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Pharmacies
+              
+              <Link href="/admin/pharmacies">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/pharmacies") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  🏥 Pharmacies
+                </div>
               </Link>
-              <Link href="/admin/doctors" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Médecins
+              
+              <Link href="/admin/doctors">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/doctors") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  👨‍⚕️ Médecins
+                </div>
               </Link>
-              <Link href="/admin/deliveries" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Livraisons n8n
+              
+              <Link href="/admin/deliveries">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/deliveries") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  🚚 Livraisons n8n
+                </div>
               </Link>
-              <Link href="/admin/clients" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Interfaces Clients
+              
+              <Link href="/admin/clients">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/clients") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  👥 Interfaces Clients
+                </div>
               </Link>
-              <Link href="/admin/monitoring" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Monitoring
+              
+              <Link href="/admin/monitoring">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/monitoring") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  📈 Monitoring
+                </div>
               </Link>
-              <Link href="/admin/analytics" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Analytics
+              
+              <Link href="/admin/analytics">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/analytics") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  📊 Analytics
+                </div>
               </Link>
             </div>
             
@@ -56,14 +107,35 @@ export default function AdminLayout({
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 SYSTÈME
               </p>
-              <Link href="/admin/workflows" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Workflows n8n
+              
+              <Link href="/admin/workflows">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/workflows") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  🔧 Workflows n8n
+                </div>
               </Link>
-              <Link href="/admin/settings" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Paramètres
+              
+              <Link href="/admin/settings">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/settings") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  ⚙️ Paramètres
+                </div>
               </Link>
-              <Link href="/admin/logs" className="block px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100">
-                Logs Système
+              
+              <Link href="/admin/logs">
+                <div className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive("/admin/logs") 
+                    ? "bg-blue-100 text-blue-900" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}>
+                  📄 Logs Système
+                </div>
               </Link>
             </div>
           </nav>
