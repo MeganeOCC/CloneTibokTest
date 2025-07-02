@@ -33,7 +33,7 @@ interface AdminSidebarProps {
 const navItems = [
   { href: "/admin", labelKey: "dashboard", icon: LayoutDashboard },
   { href: "/admin/pharmacies", labelKey: "pharmacies", icon: Building },
-  { href: "/admin/doctors", labelKey: "doctors", icon: Stethoscope }, // ADD THIS LINE
+  { href: "/admin/doctors", labelKey: "doctors", icon: Users }, // Change from Stethoscope to Users
   { href: "/admin/deliveries", labelKey: "deliveries", icon: Truck },
   { href: "/admin/clients", labelKey: "clientInterfaces", icon: Users },
   { href: "/admin/monitoring", labelKey: "monitoring", icon: Activity },
