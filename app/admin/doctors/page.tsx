@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -121,8 +121,8 @@ export default function AdminDoctorsPage() {
   }
 
   const filteredDoctors = doctors.filter(doctor =>
-    doctor.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     doctor.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -186,7 +186,7 @@ export default function AdminDoctorsPage() {
                   <div className="flex items-center space-x-6">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-blue-600">{doctor.consultations_today}</p>
-                      <p className="text-sm text-gray-500">Consultations aujourd'hui</p>
+                      <p className="text-sm text-gray-500">Consultations aujourd&apos;hui</p>
                     </div>
                     
                     <div className="flex items-center space-x-2">
