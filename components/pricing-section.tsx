@@ -187,13 +187,12 @@ export default function PricingSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">{t.pricingTitle}</h2>
         </div>
-<div className="grid gap-8 max-w-5xl mx-auto md:grid-cols-3 justify-items-center">
-  {plans.map((plan) => (
-    <PricingCard key={plan.id} {...plan} />
-  ))}
-</div>
-
-
+        {/* Cards always centered even if only 3 */}
+        <div className="grid gap-8 max-w-5xl mx-auto md:grid-cols-3 justify-items-center">
+          {plans.map((plan) => (
+            <PricingCard key={plan.id} {...plan} />
+          ))}
+        </div>
         <div className="mt-12 text-center">
           <h3 className="text-xl font-semibold text-gray-800 mb-6">{t.paymentMethodsTitle}</h3>
           <div className="flex flex-wrap justify-center items-center gap-6">
