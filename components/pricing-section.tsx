@@ -36,6 +36,7 @@ interface PricingCardProps {
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
+  id,  // Added this - it was missing!
   title,
   description,
   priceMUR,
@@ -44,6 +45,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   tourists,
   price,
   perMonth,
+  priceNote,  // Added this too
   features,
   buttonText,
   isFeatured,
@@ -72,7 +74,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         {priceEUR && tourists && (
           <>
             <div className={`text-2xl font-bold text-blue-600 ${priceMUR ? "mt-3" : ""} mb-1`}>{priceEUR}</div>
-            <div className="text-sm text-gray-500">{tourists}</div>
+            <div className="text-sm text-gray-500">{tourists}</div>}
           </>
         )}
         {price && (
@@ -81,6 +83,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
             {perMonth && <div className="text-gray-600">{perMonth}</div>}
           </>
         )}
+        {priceNote && <div className="text-sm text-gray-500 mt-2">{priceNote}</div>}
       </div>
       <ul className="space-y-3 mb-8 flex-grow">
         {features.map((feature, index) => (
@@ -153,7 +156,6 @@ export default function PricingSection() {
       description: t.pricingPlan4Description,
       priceMUR: t.pricingPlan4PriceMUR,
       priceNote: t.pricingPlan4PriceNote,
-      residents: t.pricingPlan4PriceNote,
       features: [
         { icon: <Search className="text-teal-500" />, text: t.pricingPlan4Feature1 },
         { icon: <Shuffle className="text-teal-500" />, text: t.pricingPlan4Feature2 },
