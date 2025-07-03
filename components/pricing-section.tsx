@@ -187,11 +187,12 @@ export default function PricingSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">{t.pricingTitle}</h2>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-          {plans.map((plan) => (
-            <PricingCard key={plan.id} {...plan} />
-          ))}
-        </div>
+<div className={`grid gap-8 max-w-7xl mx-auto ${plans.length === 3 ? "md:grid-cols-3 justify-center" : "md:grid-cols-2 lg:grid-cols-4"}`}>
+  {plans.map((plan) => (
+    <PricingCard key={plan.id} {...plan} />
+  ))}
+</div>
+
         <div className="mt-12 text-center">
           <h3 className="text-xl font-semibold text-gray-800 mb-6">{t.paymentMethodsTitle}</h3>
           <div className="flex flex-wrap justify-center items-center gap-6">
