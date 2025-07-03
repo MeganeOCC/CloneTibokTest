@@ -1835,8 +1835,7 @@ export default function DashboardPageContent({
         const currentPlanKey =
           mockUser.plan === "pricingSoloPackTitle"
             ? "tibotConnectedPlanSolo"
-            : mockUser.plan === "dashboardPlanFamily"
-              ? "tibotConnectedPlanFamily"
+
               : null
 
         if (!isSubscribed && !tibotSubscription) {
