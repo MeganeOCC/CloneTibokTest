@@ -180,41 +180,42 @@ export default function AdminDoctorsPage() {
           </div>
         ) : (
           filteredDoctors.map((doctor) => (
-            <div key={doctor.id} className="mb-6">
+            <div key={doctor.id} className="mb-6 last:mb-0">
               <Link href={`/admin/doctors/${doctor.id}`} className="block">
                 <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                      <User className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{doctor.full_name}</h3>
-                      <p className="text-sm text-gray-600">{doctor.email}</p>
-                      {doctor.specialty && (
-                        <p className="text-sm text-gray-500 mt-1">{doctor.specialty}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-6">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{doctor.consultations_today}</p>
-                      <p className="text-sm text-gray-500">
-                        {language === 'fr' ? 'Consultations aujourd\'hui' : 'Consultations today'}
-                      </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                        <User className="w-6 h-6 text-gray-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">{doctor.full_name}</h3>
+                        <p className="text-sm text-gray-600">{doctor.email}</p>
+                        {doctor.specialty && (
+                          <p className="text-sm text-gray-500 mt-1">{doctor.specialty}</p>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(doctor.status)}`} />
-                      <span className="text-sm font-medium">
-                        {getStatusText(doctor.status)}
-                      </span>
+                    <div className="flex items-center space-x-6">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">{doctor.consultations_today}</p>
+                        <p className="text-sm text-gray-500">
+                          {language === 'fr' ? 'Consultations aujourd\'hui' : 'Consultations today'}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${getStatusColor(doctor.status)}`} />
+                        <span className="text-sm font-medium">
+                          {getStatusText(doctor.status)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           ))
         )}
       </div>
