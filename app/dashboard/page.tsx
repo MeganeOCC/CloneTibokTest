@@ -277,7 +277,7 @@ const mockUser = {
       doctorName: "Dr. Marie Dubois",
       doctorSpecialtyKey: "historyDoctorSpecialtyGP" as TranslationKey,
       reasonKey: "historyReasonCoughFatigue" as TranslationKey,
-      summaryIcon: StickyNoteIcon as any,
+      summaryIcon: NotesMedical as any,
       summaryTitleKey: "historyMedicalSummaryTitle" as TranslationKey,
       summaryTextKey: "historySummaryTextConsult1" as TranslationKey,
       diagnoses: [{ textKey: "historyDiagnosisPostViral" as TranslationKey, icon: Stethoscope, color: "bg-yellow-500" }],
