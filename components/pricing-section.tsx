@@ -153,6 +153,7 @@ export default function PricingSection() {
       description: t.pricingPlan4Description,
       priceMUR: t.pricingPlan4PriceMUR,
       priceNote: t.pricingPlan4PriceNote,
+      residents: t.pricingPlan4PriceNote,
       features: [
         { icon: <Search className="text-teal-500" />, text: t.pricingPlan4Feature1 },
         { icon: <Shuffle className="text-teal-500" />, text: t.pricingPlan4Feature2 },
