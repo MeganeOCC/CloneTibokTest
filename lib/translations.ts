@@ -2058,3 +2058,18 @@ export const translations = {
 } as const
 
 export type AvailableLanguage = keyof typeof translations
+
+// At the end of your translations.ts file
+export type Language = "fr" | "en"
+
+export const translations = {
+  fr: {
+    // all your French translations
+  },
+  en: {
+    // all your English translations
+  }
+} as const
+
+export type AvailableLanguage = keyof typeof translations
+export type TranslationKey = keyof typeof translations.fr | keyof typeof translations.en
