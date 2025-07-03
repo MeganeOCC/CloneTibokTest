@@ -74,7 +74,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         {priceEUR && tourists && (
           <>
             <div className={`text-2xl font-bold text-blue-600 ${priceMUR ? "mt-3" : ""} mb-1`}>{priceEUR}</div>
-            <div className="text-sm text-gray-500">{tourists}</div>}
+            <div className="text-sm text-gray-500">{tourists}</div>
           </>
         )}
         {price && (
