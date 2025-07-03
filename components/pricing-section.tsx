@@ -2,14 +2,13 @@
 
 import type React from "react"
 import Link from "next/link"
-
 import { Button } from "@/components/ui/button"
 import {
   Check,
   Truck,
   FileText,
-  LucideCreditCard,
-  LucideSmartphone,
+  CreditCard as LucideCreditCard,
+  Smartphone as LucideSmartphone,
   Search,
   Shuffle,
   UserCheck,
@@ -17,81 +16,77 @@ import {
   Activity,
 } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
-import { translations, type TranslationKey } from "@/lib/translations"
+import { translations } from "@/lib/translations"
 
 interface PricingCardProps {
   id: string
-  titleKey: TranslationKey
-  descriptionKey?: TranslationKey
-  priceMURKey?: TranslationKey
-  priceEURKey?: TranslationKey
-  residentsKey?: TranslationKey
-  touristsKey?: TranslationKey
-  priceKey?: TranslationKey
-  perMonthKey?: TranslationKey
-  priceNoteKey?: TranslationKey
-  features: { icon: React.ReactNode; textKey: TranslationKey }[]
-  buttonTextKey: TranslationKey
+  title: string
+  description?: string
+  priceMUR?: string
+  priceEUR?: string
+  residents?: string
+  tourists?: string
+  price?: string
+  perMonth?: string
+  priceNote?: string
+  features: { icon: React.ReactNode; text: string }[]
+  buttonText: string
   isFeatured?: boolean
   buttonVariant?: "default" | "secondary" | "outline" | "ghost" | "link"
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
-  id,
-  titleKey,
-  descriptionKey,
-  priceMURKey,
-  priceEURKey,
-  residentsKey,
-  touristsKey,
-  priceKey,
-  perMonthKey,
+  title,
+  description,
+  priceMUR,
+  priceEUR,
+  residents,
+  tourists,
+  price,
+  perMonth,
   features,
-  buttonTextKey,
+  buttonText,
   isFeatured,
   buttonVariant = "default",
 }) => {
-  const { language } = useLanguage()
-  const t = translations[language]
-
   return (
     <div
       className={`bg-white p-8 rounded-lg shadow-[0_10px_25px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out hover:translate-y-[-5px] flex flex-col ${
-        isFeatured ? "border-2 border-blue-600 relative pricing-featured" : ""
+        isFeatured ? "border-2 border-blue-600 relative" : ""
       }`}
     >
       {isFeatured && (
         <div className="absolute top-[-12px] right-5 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-          {t.pricingPopular}
+          POPULAIRE
         </div>
       )}
-      <h3 className="text-2xl font-bold text-gray-800 mb-2">{t[titleKey]}</h3>
-      {descriptionKey && <p className="text-sm text-gray-600 mb-4">{t[descriptionKey]}</p>}
+      <h3 className="text-2xl font-bold text-gray-800 mb-2">{title}</h3>
+      {description && <p className="text-sm text-gray-600 mb-4">{description}</p>}
       <div className="mb-6">
-        {priceMURKey && (
+        {priceMUR && (
           <>
-            <div className="text-2xl font-bold text-blue-600 mb-1">{t[priceMURKey]}</div>
-            {residentsKey && <div className="text-sm text-gray-500">{t[residentsKey]}</div>}
+            <div className="text-2xl font-bold text-blue-600 mb-1">{priceMUR}</div>
+            {residents && <div className="text-sm text-gray-500">{residents}</div>}
           </>
         )}
-        {priceEURKey && touristsKey && (
+        {priceEUR && tourists && (
           <>
-            <div className={`text-2xl font-bold text-blue-600 ${priceMURKey ? "mt-3" : ""} mb-1`}>{t[priceEURKey]}</div>
-            <div className="text-sm text-gray-500">{t[touristsKey]}</div>
+            <div className={`text-2xl font-bold text-blue-600 ${priceMUR ? "mt-3" : ""} mb-1`}>{priceEUR}</div>
+            <div className="text-sm text-gray-500">{tourists}</div>
           </>
         )}
-        {priceKey && perMonthKey && (
+        {price && (
           <>
-            <div className="text-3xl font-bold text-blue-600">{t[priceKey]}</div>
-            <div className="text-gray-600">{t[perMonthKey]}</div>
+            <div className="text-3xl font-bold text-blue-600">{price}</div>
+            {perMonth && <div className="text-gray-600">{perMonth}</div>}
           </>
         )}
       </div>
-      <ul className="space-y-3 mb-8">
+      <ul className="space-y-3 mb-8 flex-grow">
         {features.map((feature, index) => (
           <li key={index} className="flex items-center">
             {feature.icon}
-            <span className="ml-3 text-gray-700">{t[feature.textKey]}</span>
+            <span className="ml-3 text-gray-700">{feature.text}</span>
           </li>
         ))}
       </ul>
@@ -106,7 +101,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
           }`}
           variant={isFeatured ? "default" : buttonVariant}
         >
-          {t[buttonTextKey]}
+          {buttonText}
         </Button>
       </Link>
     </div>
@@ -120,9 +115,6 @@ const PaymentMethod: React.FC<{ icon: React.ReactNode; name: string }> = ({ icon
   </div>
 )
 
-const CreditCard = ({ className }: { className?: string }) => <LucideCreditCard className={className} />
-const Smartphone = ({ className }: { className?: string }) => <LucideSmartphone className={className} />
-
 export default function PricingSection() {
   const { language } = useLanguage()
   const t = translations[language]
@@ -130,69 +122,71 @@ export default function PricingSection() {
   const plans: PricingCardProps[] = [
     {
       id: "pay-per-use",
-      titleKey: "pricingPlan1Title",
-      priceMURKey: "pricingPlan1PriceMUR",
-      residentsKey: "pricingPlan1Residents",
-      priceEURKey: "pricingPlan1PriceEUR",
-      touristsKey: "pricingPlan1Tourists",
+      title: t.pricingPlan1Title,
+      priceMUR: t.pricingPlan1PriceMUR,
+      residents: t.pricingPlan1Residents,
+      priceEUR: t.pricingPlan1PriceEUR,
+      tourists: t.pricingPlan1Tourists,
       features: [
-        { icon: <Check className="text-green-500" />, textKey: "pricingPlan1Feature1" },
-        { icon: <Truck className="text-orange-500" />, textKey: "pricingPlan1Feature2" },
+        { icon: <Check className="text-green-500" />, text: t.pricingPlan1Feature1 },
+        { icon: <Truck className="text-orange-500" />, text: t.pricingPlan1Feature2 },
       ],
-      buttonTextKey: "pricingPlan1Button",
+      buttonText: t.pricingPlan1Button,
       buttonVariant: "secondary",
     },
     {
       id: "solo",
-      titleKey: "pricingPlan2Title",
-      priceKey: "pricingPlan2Price",
-      perMonthKey: "pricingPlan2PerMonth",
+      title: t.pricingPlan2Title,
+      price: t.pricingPlan2Price,
+      perMonth: t.pricingPlan2PerMonth,
       features: [
-        { icon: <Check className="text-green-500" />, textKey: "pricingPlan2Feature1" },
-        { icon: <Truck className="text-green-500" />, textKey: "pricingPlan2Feature2" },
-        { icon: <FileText className="text-green-500" />, textKey: "pricingPlan2Feature3" },
+        { icon: <Check className="text-green-500" />, text: t.pricingPlan2Feature1 },
+        { icon: <Truck className="text-green-500" />, text: t.pricingPlan2Feature2 },
+        { icon: <FileText className="text-green-500" />, text: t.pricingPlan2Feature3 },
       ],
-      buttonTextKey: "pricingPlan2Button",
+      buttonText: t.pricingPlan2Button,
+      isFeatured: true,
     },
     {
       id: "second-opinion",
-      titleKey: "pricingPlan4Title",
-      descriptionKey: "pricingPlan4Description",
-      priceMURKey: "pricingPlan4PriceMUR",
-      residentsKey: "pricingPlan4PriceNote",
+      title: t.pricingPlan4Title,
+      description: t.pricingPlan4Description,
+      priceMUR: t.pricingPlan4PriceMUR,
+      priceNote: t.pricingPlan4PriceNote,
       features: [
-        { icon: <Search className="text-teal-500" />, textKey: "pricingPlan4Feature1" },
-        { icon: <Shuffle className="text-teal-500" />, textKey: "pricingPlan4Feature2" },
-        { icon: <UserCheck className="text-teal-500" />, textKey: "pricingPlan4Feature3" },
-        { icon: <Stethoscope className="text-teal-500" />, textKey: "pricingPlan4Feature4" },
-        { icon: <FileText className="text-teal-500" />, textKey: "pricingPlan4Feature5" },
-        { icon: <Activity className="text-teal-500" />, textKey: "pricingPlan4Feature6" },
+        { icon: <Search className="text-teal-500" />, text: t.pricingPlan4Feature1 },
+        { icon: <Shuffle className="text-teal-500" />, text: t.pricingPlan4Feature2 },
+        { icon: <UserCheck className="text-teal-500" />, text: t.pricingPlan4Feature3 },
+        { icon: <Stethoscope className="text-teal-500" />, text: t.pricingPlan4Feature4 },
+        { icon: <FileText className="text-teal-500" />, text: t.pricingPlan4Feature5 },
+        { icon: <Activity className="text-teal-500" />, text: t.pricingPlan4Feature6 },
       ],
-      buttonTextKey: "pricingPlan4Button",
+      buttonText: t.pricingPlan4Button,
       buttonVariant: "outline",
     },
   ]
 
   const paymentMethods = [
-    { icon: <CreditCard className="text-2xl text-blue-600" />, name: "Visa" },
-    { icon: <CreditCard className="text-2xl text-red-500" />, name: "Mastercard" },
-    { icon: <CreditCard className="text-2xl text-blue-500" />, name: "PayPal" },
-    { icon: <CreditCard className="text-2xl text-blue-400" />, name: "Amex" },
-    { icon: <Smartphone className="text-2xl text-green-600" />, name: "Juice by MCB" },
+    { icon: <LucideCreditCard className="text-2xl text-blue-600" />, name: "Visa" },
+    { icon: <LucideCreditCard className="text-2xl text-red-500" />, name: "Mastercard" },
+    { icon: <LucideCreditCard className="text-2xl text-blue-500" />, name: "PayPal" },
+    { icon: <LucideCreditCard className="text-2xl text-blue-400" />, name: "Amex" },
+    { icon: <LucideSmartphone className="text-2xl text-green-600" />, name: "Juice by MCB" },
   ]
 
   return (
-    <section id="tarifs" className="py-16 bg-white">
+    <section id="tarifs" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">{t.pricingTitle}</h2>
         </div>
-        {/* Cards always centered even if only 3 */}
-        <div className="grid gap-8 max-w-5xl mx-auto md:grid-cols-3 justify-items-center">
+        
+        <div className="grid gap-8 max-w-6xl mx-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
           {plans.map((plan) => (
             <PricingCard key={plan.id} {...plan} />
           ))}
         </div>
+
         <div className="mt-12 text-center">
           <h3 className="text-xl font-semibold text-gray-800 mb-6">{t.paymentMethodsTitle}</h3>
           <div className="flex flex-wrap justify-center items-center gap-6">
