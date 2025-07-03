@@ -6,8 +6,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   Check,
-  Users,
-  Star,
   Truck,
   FileText,
   LucideCreditCard,
@@ -44,11 +42,10 @@ const PricingCard: React.FC<PricingCardProps> = ({
   descriptionKey,
   priceMURKey,
   priceEURKey,
-  residentsKey, // Sera utilisé pour "Selon spécialité"
+  residentsKey,
   touristsKey,
   priceKey,
   perMonthKey,
-  // priceNoteKey, // Ou utilisez priceNoteKey si vous l'avez ajouté
   features,
   buttonTextKey,
   isFeatured,
@@ -71,7 +68,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
       <h3 className="text-2xl font-bold text-gray-800 mb-2">{t[titleKey]}</h3>
       {descriptionKey && <p className="text-sm text-gray-600 mb-4">{t[descriptionKey]}</p>}
       <div className="mb-6">
-        {priceMURKey && ( // Modifié pour utiliser residentsKey comme note
+        {priceMURKey && (
           <>
             <div className="text-2xl font-bold text-blue-600 mb-1">{t[priceMURKey]}</div>
             {residentsKey && <div className="text-sm text-gray-500">{t[residentsKey]}</div>}
@@ -105,7 +102,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               ? "bg-blue-600 text-white hover:bg-blue-700"
               : buttonVariant === "secondary"
                 ? "bg-gray-600 text-white hover:bg-gray-700"
-                : "bg-teal-500 text-white hover:bg-teal-600" // Style par défaut pour la nouvelle carte
+                : "bg-teal-500 text-white hover:bg-teal-600"
           }`}
           variant={isFeatured ? "default" : buttonVariant}
         >
@@ -132,7 +129,7 @@ export default function PricingSection() {
 
   const plans: PricingCardProps[] = [
     {
-      id: "pay-per-use", // Add this
+      id: "pay-per-use",
       titleKey: "pricingPlan1Title",
       priceMURKey: "pricingPlan1PriceMUR",
       residentsKey: "pricingPlan1Residents",
@@ -146,37 +143,23 @@ export default function PricingSection() {
       buttonVariant: "secondary",
     },
     {
-      id: "solo", // Add this
+      id: "solo",
       titleKey: "pricingPlan2Title",
       priceKey: "pricingPlan2Price",
       perMonthKey: "pricingPlan2PerMonth",
       features: [
         { icon: <Check className="text-green-500" />, textKey: "pricingPlan2Feature1" },
-        { icon: <Truck className="text-green-500" />, textKey: "pricingPlan2Feature2" }, // Changed from fas fa-shipping-fast
-        { icon: <FileText className="text-green-500" />, textKey: "pricingPlan2Feature3" }, // Changed from fas fa-prescription
+        { icon: <Truck className="text-green-500" />, textKey: "pricingPlan2Feature2" },
+        { icon: <FileText className="text-green-500" />, textKey: "pricingPlan2Feature3" },
       ],
       buttonTextKey: "pricingPlan2Button",
-    },
-    {
-      id: "family", // Add this
-      titleKey: "pricingPlan3Title",
-      priceKey: "pricingPlan3Price",
-      perMonthKey: "pricingPlan3PerMonth",
-      features: [
-        { icon: <Users className="text-green-500" />, textKey: "pricingPlan3Feature1" },
-        { icon: <Check className="text-green-500" />, textKey: "pricingPlan3Feature2" },
-        { icon: <Truck className="text-green-500" />, textKey: "pricingPlan3Feature3" }, // Changed from fas fa-shipping-fast
-        { icon: <Star className="text-green-500" />, textKey: "pricingPlan3Feature4" },
-      ],
-      buttonTextKey: "pricingPlan3Button",
-      isFeatured: true,
     },
     {
       id: "second-opinion",
       titleKey: "pricingPlan4Title",
       descriptionKey: "pricingPlan4Description",
       priceMURKey: "pricingPlan4PriceMUR",
-      residentsKey: "pricingPlan4PriceNote", // Utilisation de residentsKey pour "Selon spécialité"
+      residentsKey: "pricingPlan4PriceNote",
       features: [
         { icon: <Search className="text-teal-500" />, textKey: "pricingPlan4Feature1" },
         { icon: <Shuffle className="text-teal-500" />, textKey: "pricingPlan4Feature2" },
@@ -186,14 +169,14 @@ export default function PricingSection() {
         { icon: <Activity className="text-teal-500" />, textKey: "pricingPlan4Feature6" },
       ],
       buttonTextKey: "pricingPlan4Button",
-      buttonVariant: "outline", // Ou un autre variant si vous préférez
+      buttonVariant: "outline",
     },
   ]
 
   const paymentMethods = [
     { icon: <CreditCard className="text-2xl text-blue-600" />, name: "Visa" },
     { icon: <CreditCard className="text-2xl text-red-500" />, name: "Mastercard" },
-    { icon: <CreditCard className="text-2xl text-blue-500" />, name: "PayPal" }, // No direct PayPal icon in Lucide
+    { icon: <CreditCard className="text-2xl text-blue-500" />, name: "PayPal" },
     { icon: <CreditCard className="text-2xl text-blue-400" />, name: "Amex" },
     { icon: <Smartphone className="text-2xl text-green-600" />, name: "Juice by MCB" },
   ]
@@ -205,13 +188,9 @@ export default function PricingSection() {
           <h2 className="text-3xl font-bold text-gray-800 mb-4">{t.pricingTitle}</h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-          {plans.map(
-            (
-              plan, // Changé index en plan.id pour la clé
-            ) => (
-              <PricingCard key={plan.id} {...plan} /> // Supprimé id={plan.id} car il est déjà dans {...plan}
-            ),
-          )}
+          {plans.map((plan) => (
+            <PricingCard key={plan.id} {...plan} />
+          ))}
         </div>
         <div className="mt-12 text-center">
           <h3 className="text-xl font-semibold text-gray-800 mb-6">{t.paymentMethodsTitle}</h3>
