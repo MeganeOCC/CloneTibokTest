@@ -1,7 +1,65 @@
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { useLanguage } from "@/contexts/language-context"
+import { translations } from "@/lib/translations"
+import { getSupabaseBrowserClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Eye, EyeOff, Heart } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+// Doctor Page Header Component
+const DoctorPageHeader = () => {
+  const { language, setLanguage } = useLanguage()
+  const t = translations[language]
+
+  return (
+    <header className="bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex justify-between items-center">
+          <Link href="/" className="flex items-center space-x-3 cursor-pointer">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Heart className="text-white h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">TIBOK</h1>
+              <p className="text-sm text-gray-600">{t.doctorAccessPageBaseline}</p>
+            </div>
+          </Link>
+
+          <div className="flex space-x-2">
+            <Button
+              variant={language === "fr" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setLanguage("fr")}
+              className={language === "fr" ? "bg-blue-600 hover:bg-blue-700" : ""}
+            >
+              FR
+            </Button>
+            <Button
+              variant={language === "en" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setLanguage("en")}
+              className={language === "en" ? "bg-blue-600 hover:bg-blue-700" : ""}
+            >
+              EN
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
+
 // Login Form Component
 const LoginForm = () => {
   const { language } = useLanguage()
-  const t = (key: TranslationKey) => getTranslation(language, key)
+  const t = translations[language]
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -110,14 +168,14 @@ const LoginForm = () => {
   return (
     <Card className="w-full max-w-md mx-auto shadow-xl">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">{t("doctorLoginTitle")}</CardTitle>
-        <CardDescription>{t("doctorAccessSubtitle")}</CardDescription>
+        <CardTitle className="text-2xl font-bold">{t.doctorLoginTitle}</CardTitle>
+        <CardDescription>{t.doctorAccessSubtitle}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label htmlFor="email-login" className="block text-sm font-medium text-gray-700 mb-1">
-              {t("doctorLoginProfessionalEmail")}
+              {t.doctorLoginProfessionalEmail}
             </label>
             <Input 
               type="email" 
@@ -131,7 +189,7 @@ const LoginForm = () => {
           </div>
           <div>
             <label htmlFor="password-login" className="block text-sm font-medium text-gray-700 mb-1">
-              {t("doctorLoginPassword")}
+              {t.doctorLoginPassword}
             </label>
             <div className="relative">
               <Input 
@@ -161,11 +219,11 @@ const LoginForm = () => {
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                {t("doctorLoginRememberMe")}
+                {t.doctorLoginRememberMe}
               </label>
             </div>
             <a href="#" className="text-sm text-blue-600 hover:text-blue-500">
-              {t("doctorLoginForgotPassword")}
+              {t.doctorLoginForgotPassword}
             </a>
           </div>
           
@@ -180,10 +238,21 @@ const LoginForm = () => {
             className="w-full bg-blue-600 hover:bg-blue-700" 
             disabled={loading}
           >
-            {loading ? "Connexion..." : t("doctorLoginButton")}
+            {loading ? "Connexion..." : t.doctorLoginButton}
           </Button>
         </form>
       </CardContent>
     </Card>
+  )
+}
+
+export default function DoctorAccessPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-sky-100">
+      <DoctorPageHeader />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <LoginForm />
+      </div>
+    </div>
   )
 }
