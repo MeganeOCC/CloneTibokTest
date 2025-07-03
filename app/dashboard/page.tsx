@@ -1,91 +1,22 @@
 "use client"
 
-import React, { useState, useRef, useCallback, useEffect } from "react"
+import React, { useCallback } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 import { translations, type TranslationKey } from "@/lib/translations"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Video,
   UserIcon as UserMd,
   Pill,
   Bot,
-  Clock,
-  Download,
-  Share,
-  CreditCard,
-  Send,
   Heart,
-  Check,
-  Wifi,
-  VideoOff,
-  MicOff,
-  Mic,
-  PhoneCall,
-  Stethoscope,
-  AlertTriangle,
-  Lightbulb,
-  Camera,
-  Volume2,
-  Play,
   Loader2,
-  ClipboardList,
-  UploadCloud,
-  FlaskConical,
-  SearchIcon,
-  Info,
-  ShieldCheck,
-  Phone,
-  Mail,
-  MessageSquare,
-  XIcon as XRay,
-  FileIcon as FileMedical,
-  CheckCircle,
-  Paperclip,
-  Hospital,
-  MapPin,
-  MessageCircleIcon,
-  Thermometer,
-  Lock,
-  BotIcon as Robot,
-  ArrowLeft,
-  HistoryIcon,
-  EllipsisVertical,
-  Eye,
-  LineChart,
-  CalendarCheck,
-  StickyNoteIcon as NotesMedical,
 } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
-import type { CoreMessage } from "ai"
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale,
-  type ChartData,
-  type ChartOptions,
-} from "chart.js"
-import { Line } from "react-chartjs-2"
 import { Skeleton } from "@/components/ui/skeleton"
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale)
-
-// --- Your Mock User Data (no familyMembers array) ---
 const mockUser = {
   name: "Marie Dubois",
   plan: "pricingSoloPackTitle",
@@ -96,204 +27,7 @@ const mockUser = {
     secondOpinions: 1,
     deliveries: 5,
   },
-  waitingRoomData: {
-    connectionStatus: "connected",
-    connectionMessageKey: "connection-message" as TranslationKey,
-    doctors: [
-      {
-        id: "dubois",
-        name: "Dr. Martin Dubois",
-        specialtyKey: "doctor1-specialty" as TranslationKey,
-        statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
-        waitTime: "~5",
-        queueCount: 2,
-        icon: UserMd,
-        color: "blue",
-      },
-      {
-        id: "laurent",
-        name: "Dr. Sophie Laurent",
-        specialtyKey: "doctor2-specialty" as TranslationKey,
-        statusKey: "waitingRoomDoctorBusy" as TranslationKey,
-        waitTime: "~12",
-        queueCount: 4,
-        icon: UserMd,
-        color: "purple",
-      },
-      {
-        id: "patel",
-        name: "Dr. Ahmed Patel",
-        specialtyKey: "waitingRoomPediatrics" as TranslationKey,
-        statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
-        waitTime: "~3",
-        queueCount: 1,
-        icon: Stethoscope,
-        color: "green",
-      },
-      {
-        id: "rousseau",
-        name: "Dr. Marie Rousseau",
-        specialtyKey: "waitingRoomCardiology" as TranslationKey,
-        statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
-        waitTime: "~8",
-        queueCount: 0,
-        price: "1500 MUR",
-        icon: Heart,
-        color: "orange",
-      },
-    ],
-    userQueuePosition: null as number | null,
-    estimatedUserWaitTime: null as string | null,
-    liveQueue: [
-      {
-        id: "p1",
-        nameKey: "patient1" as TranslationKey,
-        statusKey: "waitingRoomInConsultation" as TranslationKey,
-        position: 1,
-        color: "blue",
-      },
-      {
-        id: "p2",
-        nameKey: "patient2" as TranslationKey,
-        statusKey: "waitingRoomWaiting" as TranslationKey,
-        position: 2,
-        color: "yellow",
-      },
-    ],
-  },
-  pharmacyData: {
-    prescription: {
-      date: "15 Décembre 2024",
-      doctor: "Dr. Patel",
-      statusKey: "pharmacyStatusProcessing" as TranslationKey,
-      items: [
-        {
-          nameKey: "pharmacyMedicationParacetamol" as TranslationKey,
-          dosageKeyFR: "pharmacyMedicationParacetamolDosageFR",
-          dosageKeyEN: "pharmacyMedicationParacetamolDosageEN",
-        },
-        {
-          nameKey: "pharmacyMedicationAmoxicillin" as TranslationKey,
-          dosageKeyFR: "pharmacyMedicationAmoxicillinDosageFR",
-          dosageKeyEN: "pharmacyMedicationAmoxicillinDosageEN",
-        },
-        {
-          nameKey: "pharmacyMedicationCoughSyrup" as TranslationKey,
-          dosageKeyFR: "pharmacyMedicationCoughSyrupDosageFR",
-          dosageKeyEN: "pharmacyMedicationCoughSyrupDosageEN",
-        },
-      ],
-    },
-    selectedPharmacy: {
-      nameKey: "pharmacySelectedPharmacyName" as TranslationKey,
-      addressKey: "pharmacySelectedPharmacyAddress" as TranslationKey,
-      allMedsAvailableKeyFR: "pharmacyAllMedsAvailableFR",
-      allMedsAvailableKeyEN: "pharmacyAllMedsAvailableEN",
-      prepTimeKeyFR: "pharmacyPreparationTimeFR",
-      prepTimeKeyEN: "pharmacyPreparationTimeEN",
-      statusKey: "pharmacyStatusSelectedFR" as TranslationKey,
-    },
-    processSteps: [
-      {
-        id: 1,
-        titleKeyFR: "pharmacyStep1TitleFR",
-        titleKeyEN: "pharmacyStep1TitleEN",
-        descKeyFR: "pharmacyStep1DescFR",
-        descKeyEN: "pharmacyStep1DescEN",
-        status: "completed",
-        time: "14:32",
-      },
-      {
-        id: 2,
-        titleKeyFR: "pharmacyStep2TitleFR",
-        titleKeyEN: "pharmacyStep2TitleEN",
-        descKeyFR: "pharmacyStep2DescFR",
-        descKeyEN: "pharmacyStep2DescEN",
-        status: "active",
-        timeKeyFR: "pharmacyStepStatusInProgressFR",
-        timeKeyEN: "pharmacyStepStatusInProgressEN",
-      },
-      {
-        id: 3,
-        titleKeyFR: "pharmacyStep3TitleFR",
-        titleKeyEN: "pharmacyStep3TitleEN",
-        descKeyFR: "pharmacyStep3DescFR",
-        descKeyEN: "pharmacyStep3DescEN",
-        status: "waiting",
-      },
-      {
-        id: 4,
-        titleKeyFR: "pharmacyStep4TitleFR",
-        titleKeyEN: "pharmacyStep4TitleEN",
-        descKeyFR: "pharmacyStep4DescFR",
-        descKeyEN: "pharmacyStep4DescEN",
-        status: "waiting",
-      },
-      {
-        id: 5,
-        titleKeyFR: "pharmacyStep5TitleFR",
-        titleKeyEN: "pharmacyStep5TitleEN",
-        descKeyFR: "pharmacyStep5DescFR",
-        descKeyEN: "pharmacyStep5DescEN",
-        status: "waiting",
-      },
-    ],
-    estimate: {
-      medicationsAmount: "~850 MUR",
-      prepFees: "50 MUR",
-      deliveryKeyFR: "pharmacyEstimateDeliveryFreeSoloFR",
-      deliveryKeyEN: "pharmacyEstimateDeliveryFreeSoloEN",
-      totalAmount: "~900 MUR",
-      statusKeyFR: "pharmacyAwaitingFinalQuoteFR",
-      statusKeyEN: "pharmacyAwaitingFinalQuoteEN",
-    },
-    notifications: [
-      {
-        type: "success",
-        messageKeyFR: "pharmacyNotifPrescriptionSentFR",
-        messageKeyEN: "pharmacyNotifPrescriptionSentEN",
-        time: "14:32 - Pharmacie Central Plus",
-      },
-      {
-        type: "info",
-        messageKeyFR: "pharmacyNotifQuoteInProgressFR",
-        messageKeyEN: "pharmacyNotifQuoteInProgressEN",
-        detailsKeyFR: "pharmacyNotifQuoteInProgressDescFR",
-        detailsKeyEN: "pharmacyNotifQuoteInProgressDescEN",
-      },
-    ],
-  },
-  medicalHistory: [
-    {
-      id: "consult1",
-      type: "consultation",
-      titleKey: "historyConsultationGPTitle" as TranslationKey,
-      date: "15 Novembre 2024",
-      time: "14:30",
-      statusKey: "historyStatusCompleted" as TranslationKey,
-      statusColor: "bg-green-500",
-      borderColor: "border-blue-500",
-      iconColor: "text-blue-500",
-      doctorName: "Dr. Marie Dubois",
-      doctorSpecialtyKey: "historyDoctorSpecialtyGP" as TranslationKey,
-      reasonKey: "historyReasonCoughFatigue" as TranslationKey,
-      summaryIcon: NotesMedical as any,
-      summaryTitleKey: "historyMedicalSummaryTitle" as TranslationKey,
-      summaryTextKey: "historySummaryTextConsult1" as TranslationKey,
-      diagnoses: [{ textKey: "historyDiagnosisPostViral" as TranslationKey, icon: Stethoscope, color: "bg-yellow-500" }],
-      recommendationsKey: "historyRecommendationsConsult1" as TranslationKey,
-      hasPrescription: true,
-      actions: [
-        { type: "viewDetails", labelKey: "historyActionViewDetails" as TranslationKey },
-        { type: "downloadPDF", labelKey: "historyActionDownloadPDF" as TranslationKey },
-        { type: "share", labelKey: "historyActionShare" as TranslationKey },
-      ],
-    },
-    // ...more medicalHistory entries as in your current file...
-  ],
 }
-
-// ...(interfaces, components for upload, etc. unchanged, as in your current file)...
 
 export default function DashboardPageContent({
   activeTab: activeTabFromLayout,
@@ -301,10 +35,9 @@ export default function DashboardPageContent({
   isLoadingUser,
 }) {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const tabFromQuery = searchParams.get("tab")
   const activeTab = activeTabFromLayout || tabFromQuery || "dashboard"
-  const { language, setLanguage } = useLanguage()
+  const { language } = useLanguage()
   const t = useCallback(
     (key, params) => {
       let translation = translations[language][key] || key
@@ -318,22 +51,21 @@ export default function DashboardPageContent({
     [language],
   )
 
-  // ... all your other state and handlers as in your current file...
+  // Helper: display name logic
+  const dashboardDisplayName = isLoadingUser
+    ? ""
+    : currentUser
+      ? [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") ||
+        (currentUser as any).fullName ||
+        (currentUser as any).name ||
+        currentUser.email?.split("@")[0] ||
+        t("dashboardDefaultUserName" as TranslationKey)
+      : t("dashboardDefaultUserName" as TranslationKey)
 
-  // ---- CLEANED MAIN DASHBOARD TAB, NO FAMILY ----
+  // === Section Rendering ===
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
-        const dashboardDisplayName = isLoadingUser
-          ? ""
-          : currentUser
-            ? [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") ||
-              (currentUser as any).fullName ||
-              (currentUser as any).name ||
-              currentUser.email?.split("@")[0] ||
-              t("dashboardDefaultUserName" as TranslationKey)
-            : t("dashboardDefaultUserName" as TranslationKey)
-
         return (
           <div>
             <div className="mb-8">
@@ -415,27 +147,22 @@ export default function DashboardPageContent({
             </div>
           </div>
         )
-      // ---- REMOVE THE "family" CASE ----
 
-      // The rest of your cases for: waiting-room, second-opinion, pharmacy, tibot, history...
-      // Paste those from your original code unchanged (do not paste the family case or anything with familyMembers!)
-
-      // EXAMPLE:
       case "waiting-room":
-        // ... paste your waiting-room code here ...
-        break;
+        return <div style={{fontSize:20,marginTop:40}}>Salle d'attente (aucune logique famille)</div>
+
       case "second-opinion":
-        // ... paste your second-opinion code here ...
-        break;
+        return <div style={{fontSize:20,marginTop:40}}>Second avis (aucune logique famille)</div>
+
       case "pharmacy":
-        // ... paste your pharmacy code here ...
-        break;
+        return <div style={{fontSize:20,marginTop:40}}>Pharmacie (aucune logique famille)</div>
+
       case "tibot":
-        // ... paste your tibot code here ...
-        break;
+        return <div style={{fontSize:20,marginTop:40}}>TiBot IA (aucune logique famille)</div>
+
       case "history":
-        // ... paste your history code here ...
-        break;
+        return <div style={{fontSize:20,marginTop:40}}>Historique (aucune logique famille)</div>
+
       default:
         return <div>{t("navDashboard")} Content</div>
     }
