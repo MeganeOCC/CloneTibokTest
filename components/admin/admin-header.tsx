@@ -20,6 +20,7 @@ export function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderProps) {
             <button
               onClick={onMenuClick}
               className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 lg:hidden"
+              aria-label="Toggle menu"
             >
               {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -37,7 +38,7 @@ export function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderProps) {
                 variant={language === 'fr' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setLanguage('fr')}
-                className={language === 'fr' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                className={language === 'fr' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-gray-100'}
               >
                 FR
               </Button>
@@ -45,7 +46,7 @@ export function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderProps) {
                 variant={language === 'en' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setLanguage('en')}
-                className={language === 'en' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                className={language === 'en' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-gray-100'}
               >
                 EN
               </Button>
