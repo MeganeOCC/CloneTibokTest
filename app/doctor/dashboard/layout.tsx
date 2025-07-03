@@ -1,11 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState, type ReactNode } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useLanguage, type Language } from "@/contexts/language-context"
 import { translations, type TranslationKey } from "@/lib/translations"
+import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
@@ -22,9 +23,10 @@ import {
   Menu,
   Sun,
   Moon,
+  LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useTheme } from "next-themes" // Assuming you have theme provider
+import { useTheme } from "next-themes"
 
 const getTranslation = (lang: Language, key: TranslationKey) => {
   return translations[lang]?.[key] || translations["en"]?.[key] || String(key)
@@ -45,8 +47,58 @@ export default function DoctorDashboardLayout({
   const { language, setLanguage } = useLanguage()
   const t = (key: TranslationKey) => getTranslation(language, key)
   const pathname = usePathname()
+  const router = useRouter()
   const { theme, setTheme } = useTheme()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const supabase = getSupabaseBrowserClient()
+  
+  // Doctor profile state
+  const [doctorName, setDoctorName] = useState<string>("")
+  const [doctorSpecialty, setDoctorSpecialty] = useState<string>("")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchDoctorProfile()
+  }, [])
+
+  useEffect(() => {
+    // Update specialty text when language changes
+    if (!doctorSpecialty || doctorSpecialty === "Médecin Généraliste" || doctorSpecialty === "General Practitioner") {
+      setDoctorSpecialty(language === 'fr' ? 'Médecin Généraliste' : 'General Practitioner')
+    }
+  }, [language])
+
+  const fetchDoctorProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        router.push('/doctor')
+        return
+      }
+
+      // For the known doctor email, set the name directly
+      if (user.email === 'customer.service@obesity-care-clinic.com') {
+        setDoctorName('Dr. Raoul Rivet')
+        setDoctorSpecialty(language === 'fr' ? 'Médecin Généraliste' : 'General Practitioner')
+      } else {
+        // For other doctors, extract from email or use a default
+        const nameFromEmail = user.email?.split('@')[0].replace(/\./g, ' ') || 'Doctor'
+        setDoctorName(`Dr. ${nameFromEmail}`)
+        setDoctorSpecialty(language === 'fr' ? 'Médecin Généraliste' : 'General Practitioner')
+      }
+    } catch (error) {
+      console.error('Error fetching doctor profile:', error)
+      setDoctorName('Dr. Doctor') // Fallback
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/doctor')
+  }
 
   const navItems: NavItem[] = [
     { href: "/doctor/dashboard", icon: LayoutDashboard, labelKey: "doctorDashboardNavDashboard" },
@@ -89,8 +141,24 @@ export default function DoctorDashboardLayout({
           </Link>
         ))}
       </nav>
+      <div className="p-4 border-t">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          {language === 'fr' ? 'Déconnexion' : 'Logout'}
+        </Button>
+      </div>
     </div>
   )
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">
+      <div className="text-lg">{language === 'fr' ? 'Chargement...' : 'Loading...'}</div>
+    </div>
+  }
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
@@ -115,7 +183,6 @@ export default function DoctorDashboardLayout({
                 <Button variant="ghost" size="icon" className="md:hidden mr-2" onClick={() => setMobileMenuOpen(true)}>
                   <Menu className="h-6 w-6" />
                 </Button>
-                {/* Placeholder for breadcrumbs or current section title if needed */}
               </div>
 
               <div className="flex items-center space-x-4">
@@ -152,14 +219,16 @@ export default function DoctorDashboardLayout({
                 <div className="flex items-center space-x-2">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src="/placeholder.svg?width=40&height=40" alt="Doctor Avatar" />
-                    <AvatarFallback>DR</AvatarFallback>
+                    <AvatarFallback>
+                      {doctorName ? doctorName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'DR'}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {t("doctorDashboardDoctorNamePlaceholder")}
+                      {doctorName || t("doctorDashboardDoctorNamePlaceholder")}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {t("doctorDashboardSpecialtyPlaceholder")}
+                      {doctorSpecialty}
                     </p>
                   </div>
                 </div>
