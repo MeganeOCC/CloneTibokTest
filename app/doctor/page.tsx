@@ -1,66 +1,3 @@
-"use client"
-
-import type React from "react"
-import { useState } from "react"
-import { useLanguage, type Language } from "@/contexts/language-context"
-import { translations, type TranslationKey } from "@/lib/translations"
-import { getSupabaseBrowserClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Eye, EyeOff, Heart } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-
-// Helper to get translations
-const getTranslation = (lang: Language, key: TranslationKey) => {
-  return translations[lang][key] || translations["en"][key] || key
-}
-
-// Doctor Page Header Component
-const DoctorPageHeader = () => {
-  const { language, setLanguage } = useLanguage()
-  const t = (key: TranslationKey) => getTranslation(language, key)
-
-  return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-3 cursor-pointer">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Heart className="text-white h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">TIBOK</h1>
-              <p className="text-sm text-gray-600">{t("doctorAccessPageBaseline")}</p>
-            </div>
-          </Link>
-
-          <div className="flex space-x-2">
-            <Button
-              variant={language === "fr" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setLanguage("fr")}
-              className={language === "fr" ? "bg-blue-600 hover:bg-blue-700" : ""}
-            >
-              FR
-            </Button>
-            <Button
-              variant={language === "en" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setLanguage("en")}
-              className={language === "en" ? "bg-blue-600 hover:bg-blue-700" : ""}
-            >
-              EN
-            </Button>
-          </div>
-        </div>
-      </div>
-    </header>
-  )
-}
-
 // Login Form Component
 const LoginForm = () => {
   const { language } = useLanguage()
@@ -246,26 +183,7 @@ const LoginForm = () => {
             {loading ? "Connexion..." : t("doctorLoginButton")}
           </Button>
         </form>
-
-        {/* Debug info for testing */}
-        <div className="mt-4 p-3 bg-gray-50 rounded-md text-xs text-gray-600">
-          <p className="font-semibold mb-1">Test credentials:</p>
-          <p>Email: customer.service@obesity-care-clinic.com</p>
-          <p>Password: [the password you set]</p>
-          <p className="mt-2 text-gray-500">Check browser console (F12) for debug info</p>
-        </div>
       </CardContent>
     </Card>
-  )
-}
-
-export default function DoctorAccessPage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-sky-100">
-      <DoctorPageHeader />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <LoginForm />
-      </div>
-    </div>
   )
 }
