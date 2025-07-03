@@ -171,7 +171,7 @@ export default function AdminDoctorsPage() {
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="flex flex-col gap-6">
         {filteredDoctors.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <p className="text-gray-500">
@@ -180,8 +180,9 @@ export default function AdminDoctorsPage() {
           </div>
         ) : (
           filteredDoctors.map((doctor) => (
-            <Link href={`/admin/doctors/${doctor.id}`} key={doctor.id}>
-              <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer p-6">
+            <div key={doctor.id} className="mb-6">
+              <Link href={`/admin/doctors/${doctor.id}`} className="block">
+                <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
