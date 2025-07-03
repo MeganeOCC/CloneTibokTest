@@ -46,13 +46,14 @@ export default function AdminDoctorsPage() {
       
       if (error) throw error
       
-      const doctorsWithStatus = data?.map(doc => ({
+      // Use the actual status from the database instead of random
+      const doctorsWithStats = data?.map(doc => ({
         ...doc,
-        status: Math.random() > 0.7 ? 'online' : Math.random() > 0.5 ? 'consultation' : 'offline',
-        consultations_today: Math.floor(Math.random() * 15)
+        status: doc.status || 'offline', // Use actual status from DB
+        consultations_today: Math.floor(Math.random() * 15) // Keep this random for now
       })) || []
       
-      setDoctors(doctorsWithStatus as Doctor[])
+      setDoctors(doctorsWithStats as Doctor[])
     } catch (err) {
       console.error('Error loading doctors:', err)
     } finally {
