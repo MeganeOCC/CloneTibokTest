@@ -7,7 +7,6 @@ import {
   Bell,
   UserCircle,
   LayoutDashboard,
-  Users,
   Video,
   UserIcon as UserMd,
   Pill,
@@ -17,10 +16,11 @@ import {
   ChevronDown,
   LogOut,
   Settings,
+  // Users, // <--- REMOVED (was only used for family tab)
 } from "lucide-react"
 import LanguageSwitcher from "@/components/language-switcher"
 import { useLanguage } from "@/contexts/language-context"
-import { useRouter } from "next/navigation" // Importer useRouter
+import { useRouter } from "next/navigation"
 import { translations, type TranslationKey } from "@/lib/translations"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
-import { Skeleton } from "@/components/ui/skeleton" // Added for loading skeleton
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface NavItem {
   id: string
@@ -45,7 +45,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: "dashboard", labelKey: "navDashboard", icon: LayoutDashboard },
-  { id: "family", labelKey: "navFamily", icon: Users },
+  // { id: "family", labelKey: "navFamily", icon: Users }, // REMOVED
   { id: "waiting-room", labelKey: "navWaitingRoom", icon: Video, live: true },
   { id: "second-opinion", labelKey: "navSecondOpinion", icon: UserMd },
   { id: "pharmacy", labelKey: "navPharmacy", icon: Pill },
@@ -53,19 +53,12 @@ const navItems: NavItem[] = [
   { id: "history", labelKey: "navHistory", icon: History },
 ]
 
-// Mock user data for plan and consultations - replace with actual auth data later
-// const mockUserStaticData = {
-//   plan: "dashboardPlanFamily" as TranslationKey, // This will remain static for now
-//   consultationsRemaining: 3, // This will remain static for now
-// }
-
 interface UserProfile {
   id: string
   firstName: string | null
   lastName: string | null
   avatarUrl: string | null
   email: string | undefined
-  // ADDED: Fields for plan and consultations
   planNameKey?: TranslationKey | null // e.g., "pricingSoloPackTitle"
   consultationsRemaining?: number | null
 }
@@ -74,7 +67,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [activeTab, setActiveTab] = useState("dashboard")
   const { language } = useLanguage()
   const t = translations[language]
-  const router = useRouter() // Initialiser le router
+  const router = useRouter()
   const supabase = getSupabaseBrowserClient()
 
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null)
@@ -82,7 +75,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      console.log("[DashboardLayout] fetchUserData: Démarrage")
       setIsLoadingUser(true)
       const {
         data: { user },
@@ -90,36 +82,28 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       } = await supabase.auth.getUser()
 
       if (authError) {
-        console.error("[DashboardLayout] fetchUserData: Erreur fetching auth user:", authError.message)
         setIsLoadingUser(false)
         return
       }
 
       if (user) {
-        console.log("[DashboardLayout] fetchUserData: Utilisateur authentifié trouvé:", user.id)
-        // Fetch profile and potentially subscription/plan data
-        // This is a simplified example. You might have a separate 'subscriptions' table.
         const { data: profile, error: profileError } = await supabase
-          .from("profiles") // Assuming 'profiles' table might store plan info or link to it
-          .select("*, first_name, last_name, avatar_url, current_plan_id, consultations_left") // Example fields
+          .from("profiles")
+          .select("*, first_name, last_name, avatar_url, current_plan_id, consultations_left")
           .eq("id", user.id)
           .single()
 
         if (profileError) {
-          console.error("[DashboardLayout] fetchUserData: Erreur fetching profile:", profileError.message)
           setCurrentUser({
             id: user.id,
             firstName: user.email?.split("@")[0] || "User",
             lastName: "",
             avatarUrl: null,
             email: user.email,
-            planNameKey: "dashboardPlanDefault" as TranslationKey, // Fallback plan name
-            consultationsRemaining: 0, // Fallback
+            planNameKey: "dashboardPlanDefault" as TranslationKey,
+            consultationsRemaining: 0,
           })
         } else if (profile) {
-          console.log("[DashboardLayout] fetchUserData: Profil trouvé:", profile)
-          // Example: Map profile.current_plan_id to a TranslationKey for plan name
-          // This mapping logic would depend on how you store plan IDs and their display names.
           let planNameKey: TranslationKey | null = null
           if (profile.current_plan_id === "solo") planNameKey = "pricingSoloPackTitle"
           else if (profile.current_plan_id === "family") planNameKey = "pricingFamilyPackTitle"
@@ -137,7 +121,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             consultationsRemaining: profile.consultations_left ?? 0,
           })
         } else {
-          console.log("[DashboardLayout] fetchUserData: Profil non trouvé, utilisation des valeurs par défaut.")
           setCurrentUser({
             id: user.id,
             firstName: user.email?.split("@")[0] || "User",
@@ -149,48 +132,42 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           })
         }
       } else {
-        console.log("[DashboardLayout] fetchUserData: Pas d'utilisateur authentifié.")
         setCurrentUser(null)
       }
       setIsLoadingUser(false)
-      console.log("[DashboardLayout] fetchUserData: Terminé. isLoadingUser:", false)
     }
 
     fetchUserData()
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
-      console.log("[DashboardLayout] Auth Event:", event, "Session:", session ? "Exists" : "Null")
       if (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "INITIAL_SESSION") {
         if (session?.user && (!currentUser || currentUser.id !== session.user.id || event === "USER_UPDATED")) {
-          console.log(
-            "[DashboardLayout] Auth Event: SIGNED_IN or USER_UPDATED or INITIAL_SESSION with user. Re-fetching user data.",
-          )
           await fetchUserData()
         } else if (!session?.user) {
           setCurrentUser(null)
         }
       } else if (event === "SIGNED_OUT") {
-        console.log("[DashboardLayout] Auth Event: SIGNED_OUT. Clearing user data.")
         setCurrentUser(null)
-        // router.push("/start-consultation"); // Optionally redirect
+        router.push("/start-consultation")
+        router.refresh()
       }
     })
 
     return () => {
       authListener?.subscription.unsubscribe()
     }
-  }, [supabase, router]) // currentUser removed from deps to avoid re-fetch loops if only currentUser changes
+  }, [supabase, router])
 
   const displayName = currentUser
     ? [
-        currentUser.firstName, // first_name
-        currentUser.lastName, // last_name
+        currentUser.firstName,
+        currentUser.lastName,
       ]
         .filter(Boolean)
         .join(" ") ||
-      (currentUser as any).fullName || // full_name or name
+      (currentUser as any).fullName ||
       (currentUser as any).name ||
-      currentUser.email?.split("@")[0] || // email prefix
+      currentUser.email?.split("@")[0] ||
       "Utilisateur"
     : "Utilisateur"
   const avatarFallbackName = currentUser
@@ -198,17 +175,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     : "U"
 
   const handleLogout = async () => {
-    console.log("[DashboardLayout] handleLogout: Attempting to sign out...")
     const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error("[DashboardLayout] handleLogout: Error during signOut:", error.message)
-      // Optionnel: Afficher un toast d'erreur à l'utilisateur
-    } else {
-      console.log("[DashboardLayout] handleLogout: SignOut successful. Redirecting...")
-      setCurrentUser(null) // Mettre à jour l'état local immédiatement
-      setIsLoadingUser(false) // S'assurer que l'état de chargement est faux
-      router.push("/start-consultation") // Rediriger vers la page de connexion/consultation
-      router.refresh() // Forcer un rafraîchissement pour que le serveur re-évalue l'état
+    if (!error) {
+      setCurrentUser(null)
+      setIsLoadingUser(false)
+      router.push("/start-consultation")
+      router.refresh()
     }
   }
 
@@ -231,7 +203,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 </div>
               </Link>
             </div>
-
             <div className="flex items-center space-x-4">
               <LanguageSwitcher />
               <Button variant="ghost" size="icon" className="relative text-gray-500 hover:text-gray-700">
@@ -314,7 +285,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 </div>
               </div>
             </div>
-
             <div className="space-y-1 px-3">
               {navItems.map((item) => (
                 <Link
@@ -344,7 +314,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
           </nav>
         </aside>
-
         <main className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8 mt-0">
           {React.cloneElement(children as React.ReactElement, { activeTab, currentUser, isLoadingUser })}
         </main>
