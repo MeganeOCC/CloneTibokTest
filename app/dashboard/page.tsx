@@ -168,222 +168,6 @@ const mockMedicalHistoryExtended = [
   },
 ]
 
-// Mock data - replace with actual data fetching
-const mockUser = {
-  name: "Marie Dubois",
-  plan: "dashboardPlanFamily", // or "pricingSoloPackTitle" or null
-  consultationsRemaining: 3,
-  stats: {
-    consultations: "3/4",
-    prescriptions: 2,
-    secondOpinions: 1,
-    deliveries: 5,
-  },
-  familyMembers: [
-    {
-      id: "marie",
-      name: "Marie Dubois",
-      roleKey: "familyAccountHolder" as TranslationKey,
-      consultations: "2/4",
-      lastConsultation: "15/12/2024",
-      avatarColor: "bg-pink-100",
-      iconColor: "text-pink-600",
-      icon: UserMd,
-    },
-    {
-      id: "pierre",
-      name: "Pierre Dubois",
-      roleKey: "familySpouse" as TranslationKey,
-      consultations: "1/4",
-      lastConsultation: "10/12/2024",
-      avatarColor: "bg-blue-100",
-      iconColor: "text-blue-600",
-      icon: UserMd,
-    },
-    {
-      id: "emma",
-      name: "Emma Dubois",
-      roleKey: "familyDaughter" as TranslationKey,
-      age: 8,
-      consultations: "0/4",
-      lastConsultation: "-",
-      avatarColor: "bg-green-100",
-      iconColor: "text-green-600",
-      icon: Users,
-    },
-  ],
-  waitingRoomData: {
-    connectionStatus: "connected",
-    connectionMessageKey: "connection-message" as TranslationKey,
-    doctors: [
-      {
-        id: "dubois",
-        name: "Dr. Martin Dubois",
-        specialtyKey: "doctor1-specialty" as TranslationKey,
-        statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
-        waitTime: "~5",
-        queueCount: 2,
-        icon: UserMd,
-        color: "blue",
-      },
-      {
-        id: "laurent",
-        name: "Dr. Sophie Laurent",
-        specialtyKey: "doctor2-specialty" as TranslationKey,
-        statusKey: "waitingRoomDoctorBusy" as TranslationKey,
-        waitTime: "~12",
-        queueCount: 4,
-        icon: UserMd,
-        color: "purple",
-      },
-      {
-        id: "patel",
-        name: "Dr. Ahmed Patel",
-        specialtyKey: "waitingRoomPediatrics" as TranslationKey,
-        statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
-        waitTime: "~3",
-        queueCount: 1,
-        badgeKey: "waitingRoomDoctorFamily" as TranslationKey,
-        icon: Stethoscope,
-        color: "green",
-      },
-      {
-        id: "rousseau",
-        name: "Dr. Marie Rousseau",
-        specialtyKey: "waitingRoomCardiology" as TranslationKey,
-        statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
-        waitTime: "~8",
-        queueCount: 0,
-        badgeKey: "waitingRoomDoctorPaid" as TranslationKey,
-        price: "1500 MUR",
-        icon: Heart,
-        color: "orange",
-      },
-    ],
-    userQueuePosition: null as number | null,
-    estimatedUserWaitTime: null as string | null,
-    liveQueue: [
-      {
-        id: "p1",
-        nameKey: "patient1" as TranslationKey,
-        statusKey: "waitingRoomInConsultation" as TranslationKey,
-        position: 1,
-        color: "blue",
-      },
-      {
-        id: "p2",
-        nameKey: "patient2" as TranslationKey,
-        statusKey: "waitingRoomWaiting" as TranslationKey,
-        position: 2,
-        color: "yellow",
-      },
-    ],
-  },
-  pharmacyData: {
-    prescription: {
-      date: "15 Décembre 2024",
-      doctor: "Dr. Patel",
-      statusKey: "pharmacyStatusProcessing" as TranslationKey,
-      items: [
-        {
-          nameKey: "pharmacyMedicationParacetamol" as TranslationKey,
-          dosageKeyFR: "pharmacyMedicationParacetamolDosageFR",
-          dosageKeyEN: "pharmacyMedicationParacetamolDosageEN",
-        },
-        {
-          nameKey: "pharmacyMedicationAmoxicillin" as TranslationKey,
-          dosageKeyFR: "pharmacyMedicationAmoxicillinDosageFR",
-          dosageKeyEN: "pharmacyMedicationAmoxicillinDosageEN",
-        },
-        {
-          nameKey: "pharmacyMedicationCoughSyrup" as TranslationKey,
-          dosageKeyFR: "pharmacyMedicationCoughSyrupDosageFR",
-          dosageKeyEN: "pharmacyMedicationCoughSyrupDosageEN",
-        },
-      ],
-    },
-    selectedPharmacy: {
-      nameKey: "pharmacySelectedPharmacyName" as TranslationKey,
-      addressKey: "pharmacySelectedPharmacyAddress" as TranslationKey,
-      allMedsAvailableKeyFR: "pharmacyAllMedsAvailableFR",
-      allMedsAvailableKeyEN: "pharmacyAllMedsAvailableEN",
-      prepTimeKeyFR: "pharmacyPreparationTimeFR",
-      prepTimeKeyEN: "pharmacyPreparationTimeEN",
-      statusKey: "pharmacyStatusSelectedFR" as TranslationKey,
-    },
-    processSteps: [
-      {
-        id: 1,
-        titleKeyFR: "pharmacyStep1TitleFR",
-        titleKeyEN: "pharmacyStep1TitleEN",
-        descKeyFR: "pharmacyStep1DescFR",
-        descKeyEN: "pharmacyStep1DescEN",
-        status: "completed",
-        time: "14:32",
-      },
-      {
-        id: 2,
-        titleKeyFR: "pharmacyStep2TitleFR",
-        titleKeyEN: "pharmacyStep2TitleEN",
-        descKeyFR: "pharmacyStep2DescFR",
-        descKeyEN: "pharmacyStep2DescEN",
-        status: "active",
-        timeKeyFR: "pharmacyStepStatusInProgressFR",
-        timeKeyEN: "pharmacyStepStatusInProgressEN",
-      },
-      {
-        id: 3,
-        titleKeyFR: "pharmacyStep3TitleFR",
-        titleKeyEN: "pharmacyStep3TitleEN",
-        descKeyFR: "pharmacyStep3DescFR",
-        descKeyEN: "pharmacyStep3DescEN",
-        status: "waiting",
-      },
-      {
-        id: 4,
-        titleKeyFR: "pharmacyStep4TitleFR",
-        titleKeyEN: "pharmacyStep4TitleEN",
-        descKeyFR: "pharmacyStep4DescFR",
-        descKeyEN: "pharmacyStep4DescEN",
-        status: "waiting",
-      },
-      {
-        id: 5,
-        titleKeyFR: "pharmacyStep5TitleFR",
-        titleKeyEN: "pharmacyStep5TitleEN",
-        descKeyFR: "pharmacyStep5DescFR",
-        descKeyEN: "pharmacyStep5DescEN",
-        status: "waiting",
-      },
-    ],
-    estimate: {
-      medicationsAmount: "~850 MUR",
-      prepFees: "50 MUR",
-      deliveryKeyFR: "pharmacyEstimateDeliveryFreeSoloFR",
-      deliveryKeyEN: "pharmacyEstimateDeliveryFreeSoloEN",
-      totalAmount: "~900 MUR",
-      statusKeyFR: "pharmacyAwaitingFinalQuoteFR",
-      statusKeyEN: "pharmacyAwaitingFinalQuoteEN",
-    },
-    notifications: [
-      {
-        type: "success",
-        messageKeyFR: "pharmacyNotifPrescriptionSentFR",
-        messageKeyEN: "pharmacyNotifPrescriptionSentEN",
-        time: "14:32 - Pharmacie Central Plus",
-      },
-      {
-        type: "info",
-        messageKeyFR: "pharmacyNotifQuoteInProgressFR",
-        messageKeyEN: "pharmacyNotifQuoteInProgressEN",
-        detailsKeyFR: "pharmacyNotifQuoteInProgressDescFR",
-        detailsKeyEN: "pharmacyNotifQuoteInProgressDescEN",
-      },
-    ],
-  },
-  medicalHistory: mockMedicalHistoryExtended, // Use the new extended history
-}
-
 interface UserProfile {
   id: string
   firstName: string | null
@@ -396,6 +180,7 @@ interface DashboardPageContentProps {
   activeTab?: string
   currentUser?: UserProfile | null
   isLoadingUser?: boolean
+  subscriptionData?: any
 }
 
 interface StepProps {
@@ -508,6 +293,7 @@ export default function DashboardPageContent({
   activeTab: activeTabFromLayout,
   currentUser,
   isLoadingUser,
+  subscriptionData,
 }: DashboardPageContentProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -528,6 +314,190 @@ export default function DashboardPageContent({
     [language],
   )
 
+  // Mock data - replace with actual data fetching
+  const mockUser = {
+    name: "Marie Dubois",
+    plan: subscriptionData?.subscription_type === 'solo' ? "pricingSoloPackTitle" : 
+          subscriptionData?.subscription_type === 'pay_per_use' ? "dashboardPayPerUse" : null,
+    consultationsRemaining: subscriptionData?.subscription_type === 'solo' ? 
+      (subscriptionData.consultations_limit - subscriptionData.consultations_used) : 0,
+    stats: {
+      consultations: "3/4",
+      prescriptions: 2,
+      secondOpinions: 1,
+      deliveries: 5,
+    },
+    waitingRoomData: {
+      connectionStatus: "connected",
+      connectionMessageKey: "connection-message" as TranslationKey,
+      doctors: [
+        {
+          id: "dubois",
+          name: "Dr. Martin Dubois",
+          specialtyKey: "doctor1-specialty" as TranslationKey,
+          statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
+          waitTime: "~5",
+          queueCount: 2,
+          icon: UserMd,
+          color: "blue",
+        },
+        {
+          id: "laurent",
+          name: "Dr. Sophie Laurent",
+          specialtyKey: "doctor2-specialty" as TranslationKey,
+          statusKey: "waitingRoomDoctorBusy" as TranslationKey,
+          waitTime: "~12",
+          queueCount: 4,
+          icon: UserMd,
+          color: "purple",
+        },
+        {
+          id: "patel",
+          name: "Dr. Ahmed Patel",
+          specialtyKey: "waitingRoomPediatrics" as TranslationKey,
+          statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
+          waitTime: "~3",
+          queueCount: 1,
+          icon: Stethoscope,
+          color: "green",
+        },
+        {
+          id: "rousseau",
+          name: "Dr. Marie Rousseau",
+          specialtyKey: "waitingRoomCardiology" as TranslationKey,
+          statusKey: "waitingRoomDoctorAvailable" as TranslationKey,
+          waitTime: "~8",
+          queueCount: 0,
+          badgeKey: "waitingRoomDoctorPaid" as TranslationKey,
+          price: "1500 MUR",
+          icon: Heart,
+          color: "orange",
+        },
+      ],
+      userQueuePosition: null as number | null,
+      estimatedUserWaitTime: null as string | null,
+      liveQueue: [
+        {
+          id: "p1",
+          nameKey: "patient1" as TranslationKey,
+          statusKey: "waitingRoomInConsultation" as TranslationKey,
+          position: 1,
+          color: "blue",
+        },
+        {
+          id: "p2",
+          nameKey: "patient2" as TranslationKey,
+          statusKey: "waitingRoomWaiting" as TranslationKey,
+          position: 2,
+          color: "yellow",
+        },
+      ],
+    },
+    pharmacyData: {
+      prescription: {
+        date: "15 Décembre 2024",
+        doctor: "Dr. Patel",
+        statusKey: "pharmacyStatusProcessing" as TranslationKey,
+        items: [
+          {
+            nameKey: "pharmacyMedicationParacetamol" as TranslationKey,
+            dosageKeyFR: "pharmacyMedicationParacetamolDosageFR",
+            dosageKeyEN: "pharmacyMedicationParacetamolDosageEN",
+          },
+          {
+            nameKey: "pharmacyMedicationAmoxicillin" as TranslationKey,
+            dosageKeyFR: "pharmacyMedicationAmoxicillinDosageFR",
+            dosageKeyEN: "pharmacyMedicationAmoxicillinDosageEN",
+          },
+          {
+            nameKey: "pharmacyMedicationCoughSyrup" as TranslationKey,
+            dosageKeyFR: "pharmacyMedicationCoughSyrupDosageFR",
+            dosageKeyEN: "pharmacyMedicationCoughSyrupDosageEN",
+          },
+        ],
+      },
+      selectedPharmacy: {
+        nameKey: "pharmacySelectedPharmacyName" as TranslationKey,
+        addressKey: "pharmacySelectedPharmacyAddress" as TranslationKey,
+        allMedsAvailableKeyFR: "pharmacyAllMedsAvailableFR",
+        allMedsAvailableKeyEN: "pharmacyAllMedsAvailableEN",
+        prepTimeKeyFR: "pharmacyPreparationTimeFR",
+        prepTimeKeyEN: "pharmacyPreparationTimeEN",
+        statusKey: "pharmacyStatusSelectedFR" as TranslationKey,
+      },
+      processSteps: [
+        {
+          id: 1,
+          titleKeyFR: "pharmacyStep1TitleFR",
+          titleKeyEN: "pharmacyStep1TitleEN",
+          descKeyFR: "pharmacyStep1DescFR",
+          descKeyEN: "pharmacyStep1DescEN",
+          status: "completed",
+          time: "14:32",
+        },
+        {
+          id: 2,
+          titleKeyFR: "pharmacyStep2TitleFR",
+          titleKeyEN: "pharmacyStep2TitleEN",
+          descKeyFR: "pharmacyStep2DescFR",
+          descKeyEN: "pharmacyStep2DescEN",
+          status: "active",
+          timeKeyFR: "pharmacyStepStatusInProgressFR",
+          timeKeyEN: "pharmacyStepStatusInProgressEN",
+        },
+        {
+          id: 3,
+          titleKeyFR: "pharmacyStep3TitleFR",
+          titleKeyEN: "pharmacyStep3TitleEN",
+          descKeyFR: "pharmacyStep3DescFR",
+          descKeyEN: "pharmacyStep3DescEN",
+          status: "waiting",
+        },
+        {
+          id: 4,
+          titleKeyFR: "pharmacyStep4TitleFR",
+          titleKeyEN: "pharmacyStep4TitleEN",
+          descKeyFR: "pharmacyStep4DescFR",
+          descKeyEN: "pharmacyStep4DescEN",
+          status: "waiting",
+        },
+        {
+          id: 5,
+          titleKeyFR: "pharmacyStep5TitleFR",
+          titleKeyEN: "pharmacyStep5TitleEN",
+          descKeyFR: "pharmacyStep5DescFR",
+          descKeyEN: "pharmacyStep5DescEN",
+          status: "waiting",
+        },
+      ],
+      estimate: {
+        medicationsAmount: "~850 MUR",
+        prepFees: "50 MUR",
+        deliveryKeyFR: "pharmacyEstimateDeliveryFreeSoloFR",
+        deliveryKeyEN: "pharmacyEstimateDeliveryFreeSoloEN",
+        totalAmount: "~900 MUR",
+        statusKeyFR: "pharmacyAwaitingFinalQuoteFR",
+        statusKeyEN: "pharmacyAwaitingFinalQuoteEN",
+      },
+      notifications: [
+        {
+          type: "success",
+          messageKeyFR: "pharmacyNotifPrescriptionSentFR",
+          messageKeyEN: "pharmacyNotifPrescriptionSentEN",
+          time: "14:32 - Pharmacie Central Plus",
+        },
+        {
+          type: "info",
+          messageKeyFR: "pharmacyNotifQuoteInProgressFR",
+          messageKeyEN: "pharmacyNotifQuoteInProgressEN",
+          detailsKeyFR: "pharmacyNotifQuoteInProgressDescFR",
+          detailsKeyEN: "pharmacyNotifQuoteInProgressDescEN",
+        },
+      ],
+    },
+    medicalHistory: mockMedicalHistoryExtended,
+  }
+
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null)
   const [showVideoPrep, setShowVideoPrep] = useState(false)
   const [userQueuePosition, setUserQueuePosition] = useState<number | null>(mockUser.waitingRoomData.userQueuePosition)
@@ -545,7 +515,7 @@ export default function DashboardPageContent({
   const [pharmacyProcessSteps, setPharmacyProcessSteps] = useState(mockUser.pharmacyData.processSteps)
 
   // TiBot State
-  const [tibotSubscription, setTibotSubscription] = useState<"solo" | "family" | null>(null)
+  const [tibotSubscription, setTibotSubscription] = useState<"solo" | null>(null)
   const [tibotMessages, setTibotMessages] = useState<ChatMessage[]>([
     {
       id: "initial",
@@ -671,11 +641,16 @@ export default function DashboardPageContent({
   }
 
   const handleSelectDoctor = (doctorId: string, waitTime: string, queuePos: number, isPaid = false) => {
-    if (isPaid) {
+    // Check if payment is needed based on subscription
+    const needsPayment = subscriptionData?.subscription_type === 'pay_per_use' || 
+      (subscriptionData?.subscription_type === 'solo' && subscriptionData?.consultations_used >= subscriptionData?.consultations_limit) ||
+      isPaid;
+      
+    if (needsPayment) {
       const confirmPayment = window.confirm(
         language === "fr"
-          ? `Confirmer le paiement de ${mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.price} pour la consultation avec ${mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.name} ?`
-          : `Confirm payment of ${mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.price} for consultation with ${mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.name}?`,
+          ? `Confirmer le paiement de ${isPaid ? mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.price : '500 MUR'} pour la consultation avec ${mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.name} ?`
+          : `Confirm payment of ${isPaid ? mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.price : '500 MUR'} for consultation with ${mockUser.waitingRoomData.doctors.find((d) => d.id === doctorId)?.name}?`,
       )
       if (!confirmPayment) return
     }
@@ -724,7 +699,7 @@ export default function DashboardPageContent({
     )
   }
 
-  const handleTibotSubscriptionSelect = (plan: "solo" | "family") => {
+  const handleTibotSubscriptionSelect = (plan: "solo") => {
     setTibotSubscription(plan)
   }
 
@@ -839,8 +814,8 @@ export default function DashboardPageContent({
               (currentUser as any).fullName ||
               (currentUser as any).name ||
               currentUser.email?.split("@")[0] ||
-              t("dashboardDefaultUserName" as TranslationKey) // Assuming you add this key
-            : t("dashboardDefaultUserName" as TranslationKey) // Assuming you add this key
+              t("dashboardDefaultUserName" as TranslationKey)
+            : t("dashboardDefaultUserName" as TranslationKey)
 
         return (
           <div>
@@ -891,6 +866,28 @@ export default function DashboardPageContent({
                 </Card>
               ))}
             </div>
+            
+            {/* Add subscription info card */}
+            {subscriptionData && (
+              <Card className="shadow-md mb-8">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t(subscriptionData.subscription_type === 'solo' ? 'dashboardSubscriptionSolo' : 'dashboardSubscriptionPayPerUse')}
+                      </p>
+                      {subscriptionData.subscription_type === 'solo' && (
+                        <p className="text-lg font-semibold text-gray-900">
+                          {subscriptionData.consultations_limit - subscriptionData.consultations_used} {t('dashboardConsultationsLeft')}
+                        </p>
+                      )}
+                    </div>
+                    <CreditCard className="text-blue-600" size={24} />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
                 {
@@ -911,11 +908,12 @@ export default function DashboardPageContent({
                 },
                 {
                   titleKey: "quickActionTibotAssistant",
-                  descKey: "quickActionChatWithAI",
-                  buttonKey: "quickActionChat",
-                  icon: Bot,
-                  color: "green",
-                  targetTab: "tibot",
+                  descKey: subscriptionData?.subscription_type === 'solo' ? "quickActionChatWithAI" : "tibotReservedForSolo",
+                  buttonKey: subscriptionData?.subscription_type === 'solo' ? "quickActionChat" : "upgradeToSolo",
+                  icon: subscriptionData?.subscription_type === 'solo' ? Bot : Lock,
+                  color: subscriptionData?.subscription_type === 'solo' ? "green" : "gray",
+                  targetTab: subscriptionData?.subscription_type === 'solo' ? "tibot" : "upgrade",
+                  disabled: subscriptionData?.subscription_type !== 'solo',
                 },
               ].map((action) => (
                 <Card key={action.titleKey} className="shadow-md text-center">
@@ -927,65 +925,31 @@ export default function DashboardPageContent({
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t(action.titleKey as TranslationKey)}</h3>
                     <p className="text-gray-600 text-sm mb-4">{t(action.descKey as TranslationKey)}</p>
-                    <Link href={`/dashboard?tab=${action.targetTab}`} passHref>
-                      <Button className={`w-full bg-${action.color}-600 hover:bg-${action.color}-700`}>
+                    {action.targetTab === 'upgrade' ? (
+                      <Button 
+                        className={`w-full bg-${action.color}-600 hover:bg-${action.color}-700`}
+                        onClick={() => router.push('/pricing')}
+                        disabled={action.disabled}
+                      >
                         {t(action.buttonKey as TranslationKey)}
                       </Button>
-                    </Link>
+                    ) : (
+                      <Link href={`/dashboard?tab=${action.targetTab}`} passHref>
+                        <Button 
+                          className={`w-full bg-${action.color}-600 hover:bg-${action.color}-700`}
+                          disabled={action.disabled}
+                        >
+                          {t(action.buttonKey as TranslationKey)}
+                        </Button>
+                      </Link>
+                    )}
                   </CardContent>
                 </Card>
               ))}
             </div>
           </div>
         )
-      case "family":
-        return (
-          <div>
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">{t("familyManagementTitle")}</h1>
-              <p className="text-gray-600">{t("familyManagementSubtitle")}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockUser.familyMembers.map((member) => (
-                <Card key={member.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
-                      <div
-                        className={`w-16 h-16 ${member.avatarColor} rounded-full flex items-center justify-center mr-4`}
-                      >
-                        <member.icon className={member.iconColor} size={24} />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
-                        <p className="text-sm text-gray-600">
-                          {t(member.roleKey)} {member.age && `- ${member.age} ${t("familyYearsOld")}`}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">{t("statConsultations")}</span>{" "}
-                        <span className="font-semibold">{member.consultations}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">{t("familyLastConsultation")}</span>{" "}
-                        <span className="font-semibold">{member.lastConsultation}</span>
-                      </div>
-                    </div>
-                    <Button className="w-full">{t("familyViewProfile")}</Button>
-                  </CardContent>
-                </Card>
-              ))}
-              <Card className="shadow-md border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors cursor-pointer flex flex-col items-center justify-center p-6">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Plus className="text-gray-500" size={32} />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">{t("familyAddMember")}</h3>
-                <p className="text-gray-500 text-sm">{t("familyUpToMembers")}</p>
-              </Card>
-            </div>
-          </div>
-        )
+        
       case "waiting-room":
         const { connectionStatus, connectionMessageKey, doctors } = mockUser.waitingRoomData
         return (
@@ -1058,7 +1022,7 @@ export default function DashboardPageContent({
                               <span
                                 className={cn(
                                   "text-xs px-2 py-0.5 rounded-full text-white font-medium",
-                                  doc.badgeKey === "waitingRoomDoctorFamily" ? "bg-green-600" : "bg-orange-500",
+                                  "bg-orange-500",
                                 )}
                               >
                                 {t(doc.badgeKey)}
@@ -1096,6 +1060,11 @@ export default function DashboardPageContent({
                         >
                           {doc.price ? t("doctor4-select") : t("doctor1-select")}
                         </Button>
+                        {subscriptionData?.needs_payment_for_consultation && (
+                          <p className="text-xs text-orange-600 mt-1">
+                            {t('paymentRequired')}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1831,12 +1800,8 @@ export default function DashboardPageContent({
           </div>
         )
       case "tibot":
-        const isSubscribed = mockUser.plan === "pricingSoloPackTitle" || mockUser.plan === "dashboardPlanFamily"
-        const currentPlanKey =
-          mockUser.plan === "pricingSoloPackTitle"
-            ? "tibotConnectedPlanSolo"
-
-              : null
+        const isSubscribed = mockUser.plan === "pricingSoloPackTitle"
+        const currentPlanKey = mockUser.plan === "pricingSoloPackTitle" ? "tibotConnectedPlanSolo" : null
 
         if (!isSubscribed && !tibotSubscription) {
           return (
@@ -1850,7 +1815,7 @@ export default function DashboardPageContent({
                   <CardDescription>{t("tibotAccessInfo")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-1 gap-4">
                     <Button
                       variant={tibotSubscription === "solo" ? "default" : "outline"}
                       className="w-full py-6"
@@ -1860,18 +1825,6 @@ export default function DashboardPageContent({
                         <h3 className="font-semibold">{t("pricingSoloPackTitle")}</h3>
                         <p className="text-sm text-muted-foreground">
                           {t("pricingSoloPackPrice")} {t("pricingSoloPackDesc")}
-                        </p>
-                      </div>
-                    </Button>
-                    <Button
-                      variant={tibotSubscription === "family" ? "default" : "outline"}
-                      className="w-full py-6"
-                      onClick={() => handleTibotSubscriptionSelect("family")}
-                    >
-                      <div>
-                        <h3 className="font-semibold">{t("pricingFamilyPackTitle")}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {t("pricingFamilyPackPrice")} {t("pricingFamilyPackDesc")}
                         </p>
                       </div>
                     </Button>
