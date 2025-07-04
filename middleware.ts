@@ -39,7 +39,7 @@ async function updateSessionAndGetUser(request: NextRequest) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles") // ou 'Users' selon votre schéma final pour ce flag
-      .select("profile_completed, id") // 'id' pour confirmer que c'est le bon profil
+      .select("profile_completed, id, role") // Added 'role' to check user type
       .eq("id", user.id)
       .single()
     userProfile = profile
@@ -54,11 +54,21 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Définir les routes publiques (accessibles sans authentification)
-  const publicPaths = ["/", "/start-consultation", "/auth/callback", "/api/auth", "/payment"] // Ajoutez d'autres routes publiques au besoin
+  const publicPaths = [
+    "/", 
+    "/start-consultation", 
+    "/auth/callback", 
+    "/api/auth", 
+    "/payment",
+    "/doctor", // Add doctor login page as public
+    "/admin"   // Add admin login page as public if needed
+  ]
 
   // Définir les routes protégées qui nécessitent un profil complet et un abonnement actif
   // (Exemple: toutes les routes sous /dashboard et /consultation/[id])
-  const protectedPaths = ["/dashboard", "/consultation"] // Utilisez des préfixes
+  const protectedPaths = ["/dashboard", "/consultation"] // Patient routes
+  const doctorProtectedPaths = ["/doctor/dashboard", "/doctor/profile", "/doctor/consultation"] // Doctor routes
+  const adminProtectedPaths = ["/admin/dashboard"] // Admin routes if needed
 
   const isPublicPath = publicPaths.some(
     (path) =>
@@ -67,8 +77,40 @@ export async function middleware(request: NextRequest) {
   const isApiPath = pathname.startsWith("/api/") // Exclure les API de la logique de redirection UI pour l'instant, sauf /api/auth
 
   console.log(
-    `[Middleware] Path: ${pathname}, User: ${user?.id}, Profile: ${JSON.stringify(userProfile)}, IsPublic: ${isPublicPath}`,
+    `[Middleware] Path: ${pathname}, User: ${user?.id}, Role: ${userProfile?.role}, Profile: ${JSON.stringify(userProfile)}, IsPublic: ${isPublicPath}`,
   )
+
+  // Handle doctor-specific routes
+  const isDoctorRoute = pathname.startsWith("/doctor")
+  if (isDoctorRoute) {
+    // Allow access to doctor login page without authentication
+    if (pathname === "/doctor") {
+      // If already logged in as doctor, redirect to dashboard
+      if (user && userProfile?.role === 'doctor') {
+        console.log("[Middleware] Doctor already logged in, redirecting to dashboard")
+        return NextResponse.redirect(new URL("/doctor/dashboard", request.url))
+      }
+      // Otherwise allow access to login page
+      return supabaseResponse
+    }
+    
+    // For protected doctor routes
+    if (doctorProtectedPaths.some(path => pathname.startsWith(path))) {
+      if (!user) {
+        console.log("[Middleware] Non-authenticated user trying to access doctor dashboard, redirecting to login")
+        return NextResponse.redirect(new URL("/doctor", request.url))
+      }
+      
+      if (userProfile?.role !== 'doctor') {
+        console.log("[Middleware] Non-doctor user trying to access doctor routes, redirecting")
+        return NextResponse.redirect(new URL("/", request.url))
+      }
+      
+      // Doctor is authenticated and has correct role
+      console.log("[Middleware] Doctor access granted to:", pathname)
+      return supabaseResponse
+    }
+  }
 
   // Si l'utilisateur n'est pas connecté et essaie d'accéder à une route non publique (et non API)
   if (!user && !isPublicPath && !isApiPath) {
@@ -97,6 +139,12 @@ export async function middleware(request: NextRequest) {
     // Logique de protection des routes basée sur profile_completed et abonnement
     const needsProtection = protectedPaths.some((path) => pathname.startsWith(path))
     if (needsProtection) {
+      // Skip profile completion check for doctors
+      if (userProfile?.role === 'doctor') {
+        console.log("[Middleware] Doctor accessing patient routes, redirecting to doctor dashboard")
+        return NextResponse.redirect(new URL("/doctor/dashboard", request.url))
+      }
+      
       if (!userProfile?.profile_completed) {
         console.log(
           "[Middleware] Accès à une route protégée sans profil complet. Redirection vers /start-consultation?step=3.",
