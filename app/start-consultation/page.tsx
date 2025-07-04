@@ -300,15 +300,26 @@ export default function StartConsultationPage() {
         // Vérifier la session utilisateur
         const userProfile = await checkUserSession()
         
-        if (userProfile?.profile_completed) {
-          router.push("/dashboard")
-          return
-        }
-
-        if (userProfile && !stepParam) {
-          setCurrentStep(2) // Aller directement à la tarification si connecté
+        if (userProfile) {
+          // Check if user has a subscription type set
+          const { data: profile } = await supabaseClient
+            .from("profiles")
+            .select("subscription_type, profile_completed")
+            .eq("id", userProfile.id)
+            .single()
+            
+          if (profile?.subscription_type && profile?.profile_completed) {
+            // User has completed profile and has a subscription, go to dashboard
+            router.push("/dashboard")
+            return
+          }
+          
           // Pré-remplir l'email dans le formulaire de connexion
           setLoginForm(prev => ({ ...prev, email: userProfile.email }))
+          
+          if (!stepParam) {
+            setCurrentStep(2) // Aller directement à la tarification si connecté
+          }
         }
 
         setIsInitialized(true)
@@ -349,9 +360,20 @@ export default function StartConsultationPage() {
         }
       }
 
-      if (userProfile?.profile_completed) {
-        router.push("/dashboard")
-      } else {
+      if (userProfile) {
+        // Check if user has a subscription type set
+        const { data: profile } = await supabaseClient
+          .from("profiles")
+          .select("subscription_type, profile_completed")
+          .eq("id", userProfile.id)
+          .single()
+          
+        if (profile?.subscription_type && profile?.profile_completed) {
+          // User has completed profile and has a subscription, go to dashboard
+          router.push("/dashboard")
+          return
+        }
+        
         setCurrentStep(2)
       }
     } catch (error: any) {
