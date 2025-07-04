@@ -75,65 +75,47 @@ const LoginForm = () => {
     setLoading(true)
 
     try {
-      console.log('Attempting login with email:', email)
-      
+      // Sign in
       const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password
       })
 
       if (loginError) {
-        console.error('Login error:', loginError)
         throw loginError
       }
 
-      console.log('Login successful, user:', authData.user)
+      if (!authData.user) {
+        throw new Error("Erreur d'authentification")
+      }
 
-      // Check if user exists and has the correct role
-      const userId = authData.user.id
-      console.log('Checking profile for user ID:', userId)
-
+      // Verify user role
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('id', userId)
+        .select('role')
+        .eq('id', authData.user.id)
         .single()
 
-      console.log('Profile query result:', { profile, profileError })
-
       if (profileError || !profile) {
-        console.error('Profile error:', profileError)
         throw new Error("Profil utilisateur introuvable")
       }
 
-      console.log('Profile found:', profile)
-      console.log('User role:', profile.role)
-
       if (profile.role !== 'doctor') {
-        console.error('Access denied - user role is:', profile.role)
         await supabase.auth.signOut()
         throw new Error("Accès réservé aux médecins")
       }
 
-      console.log('Doctor login successful, preparing redirect...')
-      
-      // CRITICAL FIX: Ensure session is fully established before redirect
+      // Wait for session to be established
       await supabase.auth.getSession()
       
-      // Add delay to ensure session propagation
-      await new Promise(resolve => setTimeout(resolve, 200))
-      
-      console.log('Redirecting to dashboard...')
-      
-      // Use window.location for reliable redirect
-      window.location.href = '/doctor/dashboard'
+      // Use window.location for a full page reload
+      window.location.replace('/doctor/dashboard')
       
     } catch (err: any) {
-      console.error('Login process error:', err)
+      console.error('Login error:', err)
       setError(err.message || "Erreur de connexion")
       setLoading(false)
     }
-    // Don't set loading to false on success since we're redirecting
   }
 
   return (
