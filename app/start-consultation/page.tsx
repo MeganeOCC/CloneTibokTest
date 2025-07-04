@@ -48,7 +48,7 @@ interface PricingOption {
   isPopular?: boolean
 }
 
-// Configuration des prix - maintenant statique pour éviter les re-calculs
+// Configuration des prix - SANS FAMILY PACK
 const PRICING_OPTIONS: PricingOption[] = [
   {
     id: "payperuse-local",
@@ -80,18 +80,7 @@ const PRICING_OPTIONS: PricingOption[] = [
     features: [
       "1 consultation comprise",
       "Livraison gratuite",
-      "Prescription numérique"
-    ],
-  },
-  {
-    id: "family",
-    title: "Pack Famille", 
-    price: "2800 MUR/mois",
-    desc: "Plan familial pour 4 personnes maximum",
-    features: [
-      "Jusqu'à 4 personnes",
-      "4 consultations par mois",
-      "Livraison gratuite",
+      "Prescription numérique",
       "Accès prioritaire"
     ],
     isPopular: true,
@@ -318,6 +307,8 @@ export default function StartConsultationPage() {
 
         if (userProfile && !stepParam) {
           setCurrentStep(2) // Aller directement à la tarification si connecté
+          // Pré-remplir l'email dans le formulaire de connexion
+          setLoginForm(prev => ({ ...prev, email: userProfile.email }))
         }
 
         setIsInitialized(true)
@@ -424,13 +415,15 @@ export default function StartConsultationPage() {
 
           if (patientError) throw patientError
 
-          // Marquer le profil comme complet
+          // Marquer le profil comme complet et définir le type d'abonnement
           const { error: profileError } = await supabaseClient
             .from("profiles")
             .upsert({
               id: user.id,
               full_name: `${patientForm.firstName} ${patientForm.lastName}`.trim(),
               profile_completed: true,
+              subscription_type: selectedPlan === "solo" ? "solo" : "pay_per_use",
+              subscription_status: selectedPlan === "solo" ? "pending" : "active",
             }, { onConflict: "id" })
 
           if (profileError) throw profileError
@@ -663,12 +656,12 @@ export default function StartConsultationPage() {
               )}
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
                 {PRICING_OPTIONS.map((option) => (
                   <div
                     key={option.id}
                     className={`border-2 rounded-lg p-4 sm:p-6 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-lg hover:translate-y-[-2px] ${
-                      selectedPlan === option.id ? "border-blue-700 bg-blue-500/5" : "border-gray-200"
+                      selectedPlan === option.id ? "border-blue-700 bg-blue-50" : "border-gray-200"
                     }`}
                     onClick={() => setSelectedPlan(option.id)}
                   >
