@@ -16,7 +16,6 @@ import {
   ChevronDown,
   LogOut,
   Settings,
-  // Users, // <--- REMOVED (was only used for family tab)
 } from "lucide-react"
 import LanguageSwitcher from "@/components/language-switcher"
 import { useLanguage } from "@/contexts/language-context"
@@ -41,17 +40,8 @@ interface NavItem {
   labelKey: TranslationKey
   icon: React.ElementType
   live?: boolean
+  requiresSubscription?: boolean // Add this to control access
 }
-
-const navItems: NavItem[] = [
-  { id: "dashboard", labelKey: "navDashboard", icon: LayoutDashboard },
-  // { id: "family", labelKey: "navFamily", icon: Users }, // REMOVED
-  { id: "waiting-room", labelKey: "navWaitingRoom", icon: Video, live: true },
-  { id: "second-opinion", labelKey: "navSecondOpinion", icon: UserMd },
-  { id: "pharmacy", labelKey: "navPharmacy", icon: Pill },
-  { id: "tibot", labelKey: "navTibotAI", icon: Bot },
-  { id: "history", labelKey: "navHistory", icon: History },
-]
 
 interface UserProfile {
   id: string
@@ -59,8 +49,10 @@ interface UserProfile {
   lastName: string | null
   avatarUrl: string | null
   email: string | undefined
-  planNameKey?: TranslationKey | null // e.g., "pricingSoloPackTitle"
+  planNameKey?: TranslationKey | null
   consultationsRemaining?: number | null
+  subscriptionType?: 'pay_per_use' | 'solo' | null // Add this
+  subscriptionData?: any // Add full subscription data
 }
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -73,6 +65,25 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null)
   const [isLoadingUser, setIsLoadingUser] = useState(true)
 
+  // Dynamic nav items based on subscription
+  const getNavItems = (subscriptionType: string | null): NavItem[] => {
+    const baseItems: NavItem[] = [
+      { id: "dashboard", labelKey: "navDashboard", icon: LayoutDashboard },
+      { id: "waiting-room", labelKey: "navWaitingRoom", icon: Video, live: true },
+      { id: "second-opinion", labelKey: "navSecondOpinion", icon: UserMd },
+      { id: "pharmacy", labelKey: "navPharmacy", icon: Pill },
+    ]
+    
+    // Only add TiBot for solo subscription
+    if (subscriptionType === 'solo') {
+      baseItems.push({ id: "tibot", labelKey: "navTibotAI", icon: Bot, requiresSubscription: true })
+    }
+    
+    baseItems.push({ id: "history", labelKey: "navHistory", icon: History })
+    
+    return baseItems
+  }
+
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoadingUser(true)
@@ -81,59 +92,71 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         error: authError,
       } = await supabase.auth.getUser()
 
-      if (authError) {
+      if (authError || !user) {
         setIsLoadingUser(false)
         return
       }
 
-      if (user) {
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("*, first_name, last_name, avatar_url, current_plan_id, consultations_left")
-          .eq("id", user.id)
+      // Fetch profile data
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("full_name, role")
+        .eq("id", user.id)
+        .single()
+
+      // Fetch patient data
+      const { data: patient } = await supabase
+        .from("patients")
+        .select("id, first_name, last_name")
+        .eq("user_id", user.id)
+        .single()
+
+      let subscriptionType: 'pay_per_use' | 'solo' | null = 'pay_per_use'
+      let subscriptionData = null
+      let consultationsRemaining = 0
+
+      if (patient) {
+        // Fetch active subscription
+        const { data: subscription } = await supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("patient_id", patient.id)
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(1)
           .single()
 
-        if (profileError) {
-          setCurrentUser({
-            id: user.id,
-            firstName: user.email?.split("@")[0] || "User",
-            lastName: "",
-            avatarUrl: null,
-            email: user.email,
-            planNameKey: "dashboardPlanDefault" as TranslationKey,
-            consultationsRemaining: 0,
-          })
-        } else if (profile) {
-          let planNameKey: TranslationKey | null = null
-          if (profile.current_plan_id === "solo") planNameKey = "pricingSoloPackTitle"
-          else if (profile.current_plan_id === "family") planNameKey = "pricingFamilyPackTitle"
-          else if (profile.current_plan_id === "payperuse-local") planNameKey = "pricingPayPerUseLocalTitle"
-          else if (profile.current_plan_id === "payperuse-tourist") planNameKey = "pricingPayPerUseTouristTitle"
-          else planNameKey = "dashboardPlanDefault" as TranslationKey
-
-          setCurrentUser({
-            id: user.id,
-            firstName: profile.first_name,
-            lastName: profile.last_name,
-            avatarUrl: profile.avatar_url,
-            email: user.email,
-            planNameKey: planNameKey,
-            consultationsRemaining: profile.consultations_left ?? 0,
-          })
-        } else {
-          setCurrentUser({
-            id: user.id,
-            firstName: user.email?.split("@")[0] || "User",
-            lastName: "",
-            avatarUrl: null,
-            email: user.email,
-            planNameKey: "dashboardPlanDefault" as TranslationKey,
-            consultationsRemaining: 0,
-          })
+        if (subscription) {
+          subscriptionType = subscription.subscription_type as 'pay_per_use' | 'solo'
+          subscriptionData = subscription
+          consultationsRemaining = subscription.subscription_type === 'solo' 
+            ? (subscription.consultations_limit || 1) - subscription.consultations_used 
+            : 0
         }
-      } else {
-        setCurrentUser(null)
       }
+
+      // Determine plan name key based on subscription
+      let planNameKey: TranslationKey | null = null
+      if (subscriptionType === 'solo') {
+        planNameKey = "pricingSoloPackTitle"
+      } else {
+        planNameKey = patient?.is_local 
+          ? "pricingPayPerUseLocalTitle" 
+          : "pricingPayPerUseTouristTitle"
+      }
+
+      setCurrentUser({
+        id: user.id,
+        firstName: patient?.first_name || profile?.full_name?.split(' ')[0] || user.email?.split("@")[0] || "User",
+        lastName: patient?.last_name || profile?.full_name?.split(' ')[1] || "",
+        avatarUrl: null,
+        email: user.email,
+        planNameKey: planNameKey,
+        consultationsRemaining: consultationsRemaining,
+        subscriptionType: subscriptionType,
+        subscriptionData: subscriptionData
+      })
+
       setIsLoadingUser(false)
     }
 
@@ -141,15 +164,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
       if (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "INITIAL_SESSION") {
-        if (session?.user && (!currentUser || currentUser.id !== session.user.id || event === "USER_UPDATED")) {
+        if (session?.user) {
           await fetchUserData()
-        } else if (!session?.user) {
-          setCurrentUser(null)
         }
       } else if (event === "SIGNED_OUT") {
         setCurrentUser(null)
-        router.push("/start-consultation")
-        router.refresh()
+        router.push("/")
       }
     })
 
@@ -159,17 +179,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [supabase, router])
 
   const displayName = currentUser
-    ? [
-        currentUser.firstName,
-        currentUser.lastName,
-      ]
+    ? [currentUser.firstName, currentUser.lastName]
         .filter(Boolean)
-        .join(" ") ||
-      (currentUser as any).fullName ||
-      (currentUser as any).name ||
-      currentUser.email?.split("@")[0] ||
-      "Utilisateur"
+        .join(" ") || currentUser.email?.split("@")[0] || "Utilisateur"
     : "Utilisateur"
+    
   const avatarFallbackName = currentUser
     ? `${(currentUser.firstName || "U").charAt(0)}${(currentUser.lastName || "").charAt(0)}`
     : "U"
@@ -179,13 +193,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (!error) {
       setCurrentUser(null)
       setIsLoadingUser(false)
-      router.push("/start-consultation")
-      router.refresh()
+      router.push("/")
     }
   }
 
   const planDisplayKey = currentUser?.planNameKey || ("dashboardPlanDefault" as TranslationKey)
   const consultationsDisplay = currentUser?.consultationsRemaining ?? 0
+  const navItems = getNavItems(currentUser?.subscriptionType || null)
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -249,7 +263,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="outline" onClick={() => (window.location.href = "/start-consultation")}>
+                <Button variant="outline" onClick={() => router.push("/auth/login")}>
                   Connexion
                 </Button>
               )}
@@ -277,7 +291,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                       <>
                         <p className="text-sm font-medium text-gray-900">{t[planDisplayKey]}</p>
                         <p className="text-xs text-gray-500">
-                          {consultationsDisplay} {t.dashboardConsultationsRemaining}
+                          {currentUser?.subscriptionType === 'solo' 
+                            ? `${consultationsDisplay} ${t.dashboardConsultationsRemaining}`
+                            : t.dashboardPayPerUse || "Pay per use"
+                          }
                         </p>
                       </>
                     )}
