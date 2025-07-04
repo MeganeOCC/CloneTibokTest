@@ -438,17 +438,31 @@ export default function StartConsultationPage() {
           if (patientError) throw patientError
 
           // Marquer le profil comme complet et définir le type d'abonnement
+          const subscriptionType = selectedPlan === "solo" ? "solo" : "pay_per_use";
+          
           const { error: profileError } = await supabaseClient
             .from("profiles")
             .upsert({
               id: user.id,
               full_name: `${patientForm.firstName} ${patientForm.lastName}`.trim(),
               profile_completed: true,
-              subscription_type: selectedPlan === "solo" ? "solo" : "pay_per_use",
+              subscription_type: subscriptionType,
               subscription_status: selectedPlan === "solo" ? "pending" : "active",
             }, { onConflict: "id" })
 
           if (profileError) throw profileError
+          
+          // Also create/update subscription record
+          const { error: subError } = await supabaseClient
+            .from("subscriptions")
+            .upsert({
+              patient_id: user.id,
+              subscription_type: subscriptionType,
+              status: selectedPlan === "solo" ? "pending" : "active",
+              start_date: new Date().toISOString(),
+            }, { onConflict: "patient_id" })
+
+          if (subError) throw subError
 
           setCurrentStep(4)
         } catch (error: any) {
