@@ -89,11 +89,10 @@ const LoginForm = () => {
 
       console.log('Login successful, user:', authData.user)
 
-      // First check if user exists and has the correct email
+      // Check if user exists and has the correct role
       const userId = authData.user.id
       console.log('Checking profile for user ID:', userId)
 
-      // Try direct query to profiles table
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -102,46 +101,8 @@ const LoginForm = () => {
 
       console.log('Profile query result:', { profile, profileError })
 
-      if (profileError) {
-        console.error('Profile error details:', {
-          message: profileError.message,
-          details: profileError.details,
-          hint: profileError.hint,
-          code: profileError.code
-        })
-        
-        // If profile doesn't exist, try to create it
-        if (profileError.code === 'PGRST116') {
-          console.log('Profile not found, attempting to create one...')
-          
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert({
-              id: userId,
-              email: authData.user.email,
-              role: 'doctor',
-              full_name: 'Dr. Customer Service',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .select()
-            .single()
-
-          if (createError) {
-            console.error('Failed to create profile:', createError)
-            throw new Error("Impossible de créer le profil utilisateur")
-          }
-
-          console.log('Profile created successfully:', newProfile)
-          router.push("/doctor/dashboard")
-          return
-        }
-        
-        throw new Error("Erreur lors de la récupération du profil")
-      }
-
-      if (!profile) {
-        console.error('No profile found for user:', userId)
+      if (profileError || !profile) {
+        console.error('Profile error:', profileError)
         throw new Error("Profil utilisateur introuvable")
       }
 
@@ -154,15 +115,25 @@ const LoginForm = () => {
         throw new Error("Accès réservé aux médecins")
       }
 
-      console.log('Doctor login successful, redirecting to dashboard')
-      router.push("/doctor/dashboard")
+      console.log('Doctor login successful, preparing redirect...')
+      
+      // CRITICAL FIX: Ensure session is fully established before redirect
+      await supabase.auth.getSession()
+      
+      // Add delay to ensure session propagation
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
+      console.log('Redirecting to dashboard...')
+      
+      // Use window.location for reliable redirect
+      window.location.href = '/doctor/dashboard'
       
     } catch (err: any) {
       console.error('Login process error:', err)
       setError(err.message || "Erreur de connexion")
-    } finally {
       setLoading(false)
     }
+    // Don't set loading to false on success since we're redirecting
   }
 
   return (
