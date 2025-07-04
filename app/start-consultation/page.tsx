@@ -452,7 +452,7 @@ export default function StartConsultationPage() {
 
           if (profileError) throw profileError
           
-          // Also create/update subscription record
+          // Also create/update subscription record with patient info
           const { error: subError } = await supabaseClient
             .from("subscriptions")
             .upsert({
@@ -460,6 +460,9 @@ export default function StartConsultationPage() {
               subscription_type: subscriptionType,
               status: selectedPlan === "solo" ? "pending" : "active",
               start_date: new Date().toISOString(),
+              patient_first_name: patientForm.firstName,
+              patient_last_name: patientForm.lastName,
+              patient_email: user.email,
             }, { onConflict: "patient_id" })
 
           if (subError) throw subError
